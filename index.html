@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prod99 — Study on your own clock</title>
+<link rel="icon" id="favicon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -533,11 +534,24 @@ html[data-power="low"] .overlay{background:rgba(10,5,4,.7)}
 
   function logoFor(theme){ return theme === 'dark' ? LOGO_DARK : LOGO_LIGHT; }
 
+  function setFavicon(src){
+    var old = document.getElementById('favicon') ||
+              document.querySelector('link[rel~="icon"]');
+    var link = document.createElement('link');
+    link.rel = 'icon';
+    link.id = 'favicon';
+    link.type = 'image/png';
+    link.href = src;
+    if(old && old.parentNode){ old.parentNode.replaceChild(link, old); }
+    else { document.head.appendChild(link); }
+  }
+
   function applyLogos(theme){
     var src = logoFor(theme);
     navLogo.src = src;
     heroLogo.src = src;
     footerLogo.src = src;
+    setFavicon(src);
   }
 
   function getStoredTheme(){
@@ -892,4 +906,3 @@ P99.reload();
 
 </body>
 </html>
-
