@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prod99 — Study on your own clock</title>
 <link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" id="favicon" type="image/png" href="/favicon.png">
+<link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -540,25 +540,11 @@ html[data-power="low"] .overlay{background:rgba(10,5,4,.7)}
   function logoFor(theme){ return theme === 'dark' ? LOGO_DARK : LOGO_LIGHT; }
   function faviconFor(theme){ return theme === 'dark' ? FAVICON_DARK : FAVICON_LIGHT; }
 
-  function setFavicon(theme){
-    var src = theme === 'dark' ? '/favicon-dark.png' : '/favicon.png';
-    var old = document.getElementById('favicon');
-    if (old) {
-      var link = document.createElement('link');
-      link.id = 'favicon';
-      link.rel = 'icon';
-      link.type = 'image/png';
-      link.href = src + '?v=' + new Date().getTime(); // The cache buster
-      old.parentNode.replaceChild(link, old);
-    }
-  }
-
   function applyLogos(theme){
     var src = logoFor(theme);
     navLogo.src = src;
     heroLogo.src = src;
     footerLogo.src = src;
-    setFavicon(theme); // Call the new function here
   }
 
   function getStoredTheme(){
