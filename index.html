@@ -540,16 +540,17 @@ html[data-power="low"] .overlay{background:rgba(10,5,4,.7)}
   function logoFor(theme){ return theme === 'dark' ? LOGO_DARK : LOGO_LIGHT; }
   function faviconFor(theme){ return theme === 'dark' ? FAVICON_DARK : FAVICON_LIGHT; }
 
-  function setFavicon(src){
-    var old = document.getElementById('favicon') ||
-              document.querySelector('link[rel~="icon"]');
-    var link = document.createElement('link');
-    link.rel = 'icon';
-    link.id = 'favicon';
-    link.type = 'image/png';
-    link.href = src;
-    if(old && old.parentNode){ old.parentNode.replaceChild(link, old); }
-    else { document.head.appendChild(link); }
+  function setFavicon(theme){
+    var src = theme === 'dark' ? '/favicon-dark.png' : '/favicon.png';
+    var old = document.getElementById('favicon');
+    if (old) {
+      var link = document.createElement('link');
+      link.id = 'favicon';
+      link.rel = 'icon';
+      link.type = 'image/png';
+      link.href = src + '?v=' + new Date().getTime(); // The cache buster
+      old.parentNode.replaceChild(link, old);
+    }
   }
 
   function applyLogos(theme){
@@ -557,7 +558,7 @@ html[data-power="low"] .overlay{background:rgba(10,5,4,.7)}
     navLogo.src = src;
     heroLogo.src = src;
     footerLogo.src = src;
-    setFavicon(faviconFor(theme)); // uses the small file, not the 340KB base64
+    setFavicon(theme); // Call the new function here
   }
 
   function getStoredTheme(){
