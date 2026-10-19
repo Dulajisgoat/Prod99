@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Prod99 is a global classroom where teachers share their craft and students join from anywhere in the world. Set goals, track every study session, and trade ideas in a community that keeps you moving.">
 <title>Prod99 — Study on your own clock</title>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="/favicon.png">
@@ -80,10 +81,6 @@
   .theme-toggle:hover{border-color:var(--wine);}
   .theme-toggle:active{transform:scale(.92);}
   .theme-toggle svg{width:18px;height:18px;}
-  .icon-sun{display:none;}
-  html[data-theme="dark"] .icon-sun{display:block;}
-  html[data-theme="dark"] .icon-moon{display:none;}
-
   .btn{
     font-family:"Inter Tight",sans-serif;
     font-size:.9rem;font-weight:600;
@@ -387,8 +384,8 @@ html.in-app .lv-link{display:none}
 input,select,textarea,.modal input{border-radius:12px;background:var(--field);backdrop-filter:none;-webkit-backdrop-filter:none}
 /* hero */
 .hero-c{text-align:center;display:flex;flex-direction:column;align-items:center}
-.hero-logo{flex:none;width:120px;margin:0 auto 28px;animation:heroFloat 7s ease-in-out infinite}
-.hero-logo img{width:120px;height:120px}
+.hero-logo{flex:none;width:clamp(170px,30vw,230px);margin:0 auto 28px;animation:heroFloat 7s ease-in-out infinite}
+.hero-logo img{width:100%;height:auto;aspect-ratio:1/1}
 .hero-logo::before{inset:-26%;background:none;border:2px dotted var(--wine);opacity:.4;animation:spin 40s linear infinite}
 @keyframes heroFloat{0%,100%{transform:translateY(-12px)}50%{transform:translateY(12px)}}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -437,12 +434,15 @@ html.rx-on[data-power="low"] .rx{opacity:1;transform:none}
 .ready::before{content:"";width:7px;height:7px;border-radius:50%;background:#3F8F5A}
 .tabs{display:flex;gap:6px;padding:12px 16px 0;overflow-x:auto}
 .tabs button{border:0;background:none;padding:8px 16px;border-radius:999px;font:600 .85rem "Inter Tight",sans-serif;color:var(--ink-soft);cursor:pointer;white-space:nowrap;transition:background .25s,color .25s}
-.tabs button[aria-selected="true"]{background:var(--wine);color:#fff}
 .mps{display:grid}
 .mp{grid-area:1/1;padding:22px;opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s linear .45s}
 .mp.on{opacity:1;visibility:visible;transition:opacity .45s ease,visibility 0s}
 .stack{display:flex;flex-direction:column;gap:16px}
 .mp .post{border-radius:var(--r);animation:none}
+/* Sample-data bars start at zero so pick() can animate them up to target on
+   first reveal — otherwise they flash at default 100% width / 4px min-height. */
+.mp .pbar i{width:0}
+.mp .bars i{height:0;min-height:0}
 .cap{margin:0;padding:0 22px 16px;font-size:.78rem;color:var(--ink-soft)}
 /* features */
 .fgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
@@ -582,8 +582,7 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
 </style>
 <style id="motion">
 /* ===== Motion layer: WebGL logo halo + Stripe-style page choreography ===== */
-#logoGL{position:absolute;left:50%;top:50%;width:360px;height:360px;transform:translate(-50%,-50%);z-index:-1;pointer-events:none}
-.hero-logo.lg-ok::before{display:none}
+.hero-logo::before{display:none!important}
 .hero-c>*:not(.hero-logo){position:relative;z-index:1}
 @keyframes heroRise{from{opacity:0;transform:translateY(20px)}}
 .hero-logo img{animation:heroRise 1s var(--ease) backwards}
@@ -610,20 +609,136 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
 :root{interpolate-size:allow-keywords}
 .faq details::details-content{block-size:0;overflow:hidden;opacity:0;transition:block-size .4s var(--ease),opacity .3s ease,content-visibility .4s allow-discrete}
 .faq details[open]::details-content{block-size:auto;opacity:1}
-@media (max-width:560px){#logoGL{width:280px;height:280px}}
 </style>
 <script>document.documentElement.classList.add('rx-on')</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style id="geo">
+/* ===== 3D geometry: real CSS 3D solids (cubes, pyramids, wire spheres) =====
+   Outer <b> slides sideways + turns with page scroll; inner solid spins on its own.
+   Edge/face colours derive from --wine so both themes stay on-palette and ease with the theme change. */
+:root{--sp:0}
+.geo{--edge:color-mix(in srgb,var(--wine) 52%,transparent);--edge2:color-mix(in srgb,var(--wine) 30%,transparent)}
+html[data-theme="dark"] .geo{--edge:color-mix(in srgb,var(--wine) 70%,transparent);--edge2:color-mix(in srgb,var(--wine) 42%,transparent)}
+.geo{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;perspective:900px;perspective-origin:50% 38%}
+.geo b{position:absolute;left:var(--x);top:var(--y);width:0;height:0;transform-style:preserve-3d;will-change:transform}
+.geo i{position:absolute;display:block;width:var(--s);height:var(--s);left:calc(var(--s)/-2);top:calc(var(--s)/-2);transform-style:preserve-3d;
+  transform:rotateX(-24deg) rotateY(32deg);animation:spin3d var(--t,22s) linear infinite var(--dir,normal);animation-delay:var(--dl,0s)}
+.geo u{position:absolute;display:block;backface-visibility:visible;transition:border-color .6s cubic-bezier(.4,0,.2,1),background-color .6s cubic-bezier(.4,0,.2,1)}
+html.boot .geo u{transition:none}
+@keyframes spin3d{from{transform:rotateX(-24deg) rotateY(0)}to{transform:rotateX(-24deg) rotateY(360deg)}}
+/* cube */
+.cube u{inset:0;border:1.5px solid var(--edge);background:color-mix(in srgb,var(--wine) var(--a,9%),transparent)}
+.cube u:nth-child(1){transform:translateZ(calc(var(--s)/2));--a:13%}
+.cube u:nth-child(2){transform:rotateY(180deg) translateZ(calc(var(--s)/2));--a:5%}
+.cube u:nth-child(3){transform:rotateY(90deg) translateZ(calc(var(--s)/2));--a:9%}
+.cube u:nth-child(4){transform:rotateY(-90deg) translateZ(calc(var(--s)/2));--a:7%}
+.cube u:nth-child(5){transform:rotateX(90deg) translateZ(calc(var(--s)/2));--a:16%}
+.cube u:nth-child(6){transform:rotateX(-90deg) translateZ(calc(var(--s)/2));--a:4%}
+/* square pyramid (height .9 x base, slant face tilted 29deg) */
+.pyr{--L:calc(var(--s)*1.03)}
+.pyr u{left:0;width:var(--s);top:calc(var(--s)/2 - var(--L));height:var(--L);transform-origin:50% 100%;
+  background:color-mix(in srgb,var(--wine) var(--a,10%),transparent);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.pyr u::after{content:"";position:absolute;inset:0;background:var(--edge);
+  clip-path:polygon(evenodd,50% 0,100% 100%,0 100%,50% 0,50% 5%,5% 96%,95% 96%,50% 5%)}
+.pyr u:nth-child(2){transform:translateZ(calc(var(--s)/2)) rotateX(29deg);--a:15%}
+.pyr u:nth-child(3){transform:rotateY(90deg) translateZ(calc(var(--s)/2)) rotateX(29deg);--a:8%}
+.pyr u:nth-child(4){transform:rotateY(180deg) translateZ(calc(var(--s)/2)) rotateX(29deg);--a:5%}
+.pyr u:nth-child(5){transform:rotateY(270deg) translateZ(calc(var(--s)/2)) rotateX(29deg);--a:11%}
+.pyr u.bs{top:0;height:var(--s);transform:rotateX(90deg);transform-origin:50% 50%;clip-path:none;border:1.5px solid var(--edge);background:color-mix(in srgb,var(--wine) 4%,transparent)}
+.pyr u.bs::after{display:none}
+.pyr{margin-top:calc(var(--s)*.18)}
+/* wire sphere: four great circles */
+.sph u{inset:0;border:1.5px solid var(--edge2);border-radius:50%}
+.sph u:nth-child(2){transform:rotateY(45deg)}.sph u:nth-child(3){transform:rotateY(90deg)}.sph u:nth-child(4){transform:rotateY(135deg)}
+.sph::after{content:"";position:absolute;inset:0;border-radius:50%;border:1.5px solid var(--edge);transform:rotateX(90deg)}
+/* placement: sizes in px, travel sideways in vw */
+.g1{--x:14%;--y:20%;--s:70px;--dx:62;--dy:40;--r:140;--t:26s}
+.g2{--x:84%;--y:28%;--s:110px;--dx:-66;--dy:90;--r:-120;--t:30s;--dir:reverse;--dl:-6s}
+.g3{--x:72%;--y:80%;--s:120px;--dx:-58;--dy:-70;--r:180;--t:34s}
+.g4{--x:20%;--y:74%;--s:96px;--dx:64;--dy:-60;--r:-160;--t:24s;--dir:reverse;--dl:-3s}
+.g5{--x:50%;--y:14%;--s:60px;--dx:-50;--dy:120;--r:200;--t:20s;--dl:-9s}
+.g6{--x:92%;--y:62%;--s:44px;--dx:-72;--dy:-90;--r:240;--t:18s;--dl:-5s}
+.g7{--x:8%;--y:46%;--s:140px;--dx:58;--dy:60;--r:100;--t:38s;--dir:reverse}
+/* slide sideways on scroll: pure CSS scroll timeline, GPU transform only */
+@supports (animation-timeline:scroll()){
+  @keyframes geoSlide{from{transform:translate3d(0,0,0) rotateY(0) rotateX(0)}to{transform:translate3d(calc(var(--dx)*1vw),calc(var(--dy)*1px),0) rotateY(calc(var(--r)*1deg)) rotateX(calc(var(--r)*.3deg))}}
+  .geo b{animation:geoSlide linear both;animation-timeline:scroll(root block)}
+}
+/* fallback via --sp */
+html.geo-js .geo b{transform:translate3d(calc(var(--dx)*var(--sp)*1vw),calc(var(--dy)*var(--sp)*1px),0) rotateY(calc(var(--r)*var(--sp)*1deg));animation:none}
+html.geo-js .geo i{animation:spin3d var(--t,22s) linear infinite var(--dir,normal)}
+nav{position:sticky}header.hero,.sec,footer,.mq{position:relative}
+/* Low-end: same seven solids as high-end, but static (still 3D, no motion, no transitions) */
+html[data-power="low"] .geo b,html[data-power="low"] .geo i{animation:none!important;will-change:auto}
+html[data-power="low"] .geo b{transform:none!important}
+html[data-power="low"] .geo u{transition:none!important}
+@media(prefers-reduced-motion:reduce){.geo b,.geo i{animation:none!important;transform:none}.geo i{transform:rotateX(-24deg) rotateY(32deg)}}
+@media(max-width:760px){.g7,.g6{display:none}.g1{--s:52px}.g2{--s:80px}.g3{--s:84px}.g4{--s:70px}}
+
+/* ===== Steps: slide in sideways with scroll (alternating sides) ===== */
+@keyframes slideFromL{from{opacity:0;transform:translateX(-90px)}to{opacity:1;transform:none}}
+@keyframes slideFromR{from{opacity:0;transform:translateX(90px)}to{opacity:1;transform:none}}
+@keyframes stepIn{from{opacity:0;transform:translateX(-28px)}}
+@keyframes badgePop{0%{transform:scale(.5) rotate(-120deg)}60%{transform:scale(1.18) rotate(12deg)}100%{transform:none}}
+.step.on .n{animation:badgePop .7s cubic-bezier(.3,1.5,.5,1) both}
+html:not([data-power="low"]) .rx-on .step.rx{transform:translateX(-56px)}
+html:not([data-power="low"]) .rx-on .step.rx:nth-child(even){transform:translateX(56px)}
+html:not([data-power="low"]) .rx-on .step.rx.in{transform:none}
+html:not([data-power="low"]) .rx-on .fcard.rx:nth-child(odd),html:not([data-power="low"]) .rx-on .frame.rx{transform:translateX(-48px)}
+html:not([data-power="low"]) .rx-on .fcard.rx:nth-child(even){transform:translateX(48px)}
+html:not([data-power="low"]) .rx-on .fcard.rx.in,html:not([data-power="low"]) .rx-on .frame.rx.in{transform:none}
+@supports (animation-timeline:view()){
+  html:not([data-power="low"]) .rx-on .step{animation:slideFromL linear both;animation-timeline:view();animation-range:entry 0% cover 32%}
+  html:not([data-power="low"]) .rx-on .step:nth-child(even){animation-name:slideFromR}
+  html:not([data-power="low"]) .rx-on .step.rx{opacity:1;transform:none;transition:none}
+}
+@media(prefers-reduced-motion:reduce){.rx-on .step{animation:none!important}}
+
+/* ===== Icons ===== */
+/* Theme icon: crescent moon <-> sun with eight rays (CSS only, one element) */
+.theme-toggle{position:relative}
+.theme-toggle .ico{position:relative;display:block;width:18px;height:18px;border-radius:50%;background:transparent;box-shadow:inset -6px -3px 0 0 currentColor;
+  transition:transform .6s cubic-bezier(.5,1.5,.4,1),box-shadow .5s cubic-bezier(.4,0,.2,1),background-color .5s}
+.theme-toggle .ico::before{content:"";position:absolute;inset:-5px;border:0;border-radius:50%;opacity:0;transform:scale(.4) rotate(0);
+  background:repeating-conic-gradient(from -4deg,currentColor 0 8deg,transparent 8deg 45deg);
+  -webkit-mask:radial-gradient(circle,transparent 58%,#000 60%);mask:radial-gradient(circle,transparent 58%,#000 60%);
+  transition:opacity .45s ease,transform .7s cubic-bezier(.5,1.4,.4,1)}
+.theme-toggle .ico::after{display:none}
+html[data-theme="dark"] .theme-toggle .ico{background:currentColor;box-shadow:none;transform:scale(.58)}
+html[data-theme="dark"] .theme-toggle .ico::before{opacity:1;transform:scale(1.5) rotate(90deg)}
+.theme-toggle:hover .ico::before{transform:scale(1.5) rotate(135deg)}
+html[data-theme="light"] .theme-toggle:hover .ico{transform:rotate(-20deg)}
+/* Battery: fill is a real element so it can glide smoothly between full and low */
+.bat{position:relative;box-sizing:content-box;width:18px;height:9px;margin-right:3px;border:2px solid currentColor;border-radius:3px}
+.bat::before{content:none!important;display:none}
+.bat::after{content:"";position:absolute;right:-5px;top:50%;width:2px;height:4px;margin-top:-2px;background:currentColor;border-radius:0 2px 2px 0}
+.bat i{position:absolute;left:1px;top:1px;bottom:1px;right:1px;border-radius:1px;overflow:hidden;background:currentColor;
+  transform-origin:left center;transform:scaleX(1);transition:transform .7s cubic-bezier(.65,0,.25,1),background-color .5s ease}
+.bat i::after{content:"";position:absolute;inset:0;width:60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:translateX(-120%);animation:batSheen 2.8s ease-in-out infinite}
+@keyframes batSheen{0%,35%{transform:translateX(-120%)}80%,100%{transform:translateX(220%)}}
+.power-toggle{transition:color .5s ease,border-color .5s ease,transform .3s ease}
+html[data-power="low"] .bat i{transform:scaleX(.32)}
+html[data-power="low"] .bat i::after{display:none}
+/* the low-power rule kills transitions globally; keep the battery glide (and its button colour) smooth */
+html[data-power="low"] .bat i{transition-duration:.7s!important}
+html[data-power="low"] .power-toggle{transition-duration:.5s!important}
+/* Low-end theme icon: plain solid glyphs, no motion */
+html[data-power="low"] .theme-toggle .ico::before{background:none;border:2px dotted currentColor;-webkit-mask:none;mask:none;transform:none}
+html[data-theme="dark"][data-power="low"] .theme-toggle .ico::before{opacity:1;transform:scale(1.5)}
+html[data-power="low"] .theme-toggle .ico{transform:none}
+html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58)}
+</style>
 </head>
 <body>
 <div class="orbs"><i></i><i></i><i></i></div>
 <canvas id="aurora" aria-hidden="true"></canvas>
 <canvas id="shapes" aria-hidden="true"></canvas>
+<div class="geo" aria-hidden="true"><b class="g1"><i class="cube"><u></u><u></u><u></u><u></u><u></u><u></u></i></b><b class="g2"><i class="pyr"><u class="bs"></u><u></u><u></u><u></u><u></u></i></b><b class="g3"><i class="sph"><u></u><u></u><u></u><u></u></i></b><b class="g4"><i class="cube"><u></u><u></u><u></u><u></u><u></u><u></u></i></b><b class="g5"><i class="pyr"><u class="bs"></u><u></u><u></u><u></u><u></u></i></b><b class="g6"><i class="cube"><u></u><u></u><u></u><u></u><u></u><u></u></i></b><b class="g7"><i class="sph"><u></u><u></u><u></u><u></u></i></b></div>
 
 <nav aria-label="Primary">
   <div class="wrap">
     <a class="brand" href="#top">
-      <img id="logoNav" src="" alt="Prod99 logo">
+      <img id="logoNav" alt="Prod99 logo">
       <span>Prod99</span>
     </a>
     <div class="nav-links" aria-label="Sections">
@@ -636,7 +751,7 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
     </div>
     <div class="nav-right">
       <button class="theme-toggle power-toggle" id="powerToggle" type="button" aria-label="Low power mode" aria-pressed="false" title="Low power mode">
-        <span class="bat" aria-hidden="true"></span>
+        <span class="bat" aria-hidden="true"><i></i></span>
       </button>
       <button class="theme-toggle" id="themeToggle" aria-label="Switch between light and dark mode">
         <span class="ico" aria-hidden="true"></span>
@@ -657,7 +772,7 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
 <header class="hero" id="top" aria-label="Introduction">
   <div class="wrap hero-c">
     <div class="hero-logo" id="heroLogoWrap">
-      <img id="logoHero" src="" alt="Prod99 — schoolhouse and open book mark">
+      <img id="logoHero" alt="Prod99 — schoolhouse and open book mark">
     </div>
     <div class="pill"><i aria-hidden="true"></i>A classroom without borders</div>
     <h1 class="h1"><span class="ln"><span style="--i:0">Teach anywhere.</span></span><span class="ln"><span style="--i:1"><em>Learn from everywhere.</em></span></span></h1>
@@ -704,7 +819,7 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
         <div><div class="gt"><span>Prep Friday’s lesson</span><b>90%</b></div><div class="pbar"><i data-w="90"></i></div></div>
         <div><div class="gt"><span>Practice piano scales</span><b>25%</b></div><div class="pbar"><i data-w="25"></i></div></div>
       </div></div>
-      <div class="mp" role="tabpanel" aria-label="Tracker"><div class="running"><div class="clock" id="mkClock">00:25</div></div>
+      <div class="mp" role="tabpanel" aria-label="Tracker"><div class="running"><div class="clock" id="mkClock">25:00</div></div>
         <svg class="spark" viewBox="0 0 300 80" role="img" aria-label="Weekly minutes trend, sample data"><path class="a" d="M0 56C30 50 40 30 70 36S110 62 140 44S190 8 220 20S270 30 300 14V80H0Z"/><path class="l" pathLength="1" d="M0 56C30 50 40 30 70 36S110 62 140 44S190 8 220 20S270 30 300 14"/><circle cx="298" cy="14" r="4"/></svg>
         <div class="bars"><div><i data-h="30"></i>M</div><div><i data-h="52"></i>T</div><div><i data-h="22"></i>W</div><div><i data-h="64"></i>T</div><div><i data-h="48"></i>F</div><div><i data-h="70"></i>S</div><div><i data-h="36"></i>S</div></div>
       </div>
@@ -722,7 +837,7 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
   <h2 class="rx" id="h-feat">Everything a borderless classroom needs.</h2>
   <div class="fgrid" style="margin-top:36px">
     <article class="fcard gl rx"><span class="kick">Session timer</span><h3>Start the clock, forget the log</h3><p>Pick a subject and start. Prod99 logs the block automatically once you stop, so there is no guessing how long you studied.</p><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="32" cy="32" r="22"/><path d="M32 18v14l9 6"/><path d="M26 6h12"/></svg></article>
-    <article class="fcard gl rx"><span class="kick">Weekly progress</span><h3>See the pattern in your week</h3><p>A seven-day chart turns effort into something you can see, so you can tell when you showed up and when you did not.</p><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 54h44"/><rect x="14" y="34" width="7" height="16" rx="2"/><rect x="26" y="24" width="7" height="26" rx="2"/><rect x="38" y="30" width="7" height="20" rx="2"/><rect x="50" y="14" width="0" height="0"/><path d="M14 18l12-6 12 8 14-12"/></svg></article>
+    <article class="fcard gl rx"><span class="kick">Weekly progress</span><h3>See the pattern in your week</h3><p>A seven-day chart turns effort into something you can see, so you can tell when you showed up and when you did not.</p><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 54h44"/><rect x="14" y="34" width="7" height="16" rx="2"/><rect x="26" y="24" width="7" height="26" rx="2"/><rect x="38" y="30" width="7" height="20" rx="2"/><path d="M14 18l12-6 12 8 14-12"/></svg></article>
     <article class="fcard gl rx"><span class="kick">Goal tracker</span><h3>Watch the bar fill</h3><p>Set a goal, nudge your progress, and keep the list short. Teachers can share milestones; students make them their own.</p><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="26" width="52" height="12" rx="6"/><rect x="10" y="30" width="30" height="4" rx="2" fill="currentColor"/><path d="M50 12v8M46 16h8"/></svg></article>
     <article class="fcard gl rx"><span class="kick">Community</span><h3>One friendly feed</h3><p>Share a tip, ask a question, or post a lesson update. Teachers and students trade ideas in the same place.</p><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14h44a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H30l-12 10V42h-8a4 4 0 0 1-4-4V18a4 4 0 0 1 4-4z"/><path d="M20 26h24M20 33h14"/></svg></article>
   </div>
@@ -775,7 +890,7 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
 </div></section>
 </div>
 
-<section class="features" id="workspace" style="display:none;"><div class="wrap">
+<section id="workspace" style="display:none;"><div class="wrap">
 <h2>Try your workspace.</h2>
 <div class="grid3">
 <div class="card"><h3>Goals</h3>
@@ -789,7 +904,7 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
 <footer>
   <div class="wrap">
     <a class="brand" href="#top">
-      <img src="" id="logoFooter" alt="Prod99 logo">
+      <img id="logoFooter" alt="Prod99 logo">
       <span>Prod99</span>
     </a>
     <span class="fine">© 2026 Prod99</span>
@@ -886,6 +1001,12 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
     navLogo.src = src;
     heroLogo.src = src;
     footerLogo.src = src;
+    // Also swap the favicon so the browser tab matches the theme.
+    try{
+      var fav = faviconFor(theme);
+      var link = document.querySelector('link[rel="icon"][type="image/png"]') || document.querySelector('link[rel="icon"]');
+      if(link){ link.setAttribute('href', fav); }
+    }catch(e){}
   }
 
   function getStoredTheme(){
@@ -899,6 +1020,27 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
     (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   root.setAttribute('data-theme', initial);
   applyLogos(initial);
+
+  // Follow system theme changes if the user hasn't picked one explicitly.
+  if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').addEventListener){
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e){
+      if(getStoredTheme()){ return; } // user has an explicit preference; leave it alone
+      var next = e.matches ? 'dark' : 'light';
+      root.classList.add('theme-anim', 'logo-swap');
+      heroWrap.classList.add('swap');
+      root.setAttribute('data-theme', next);
+      clearTimeout(logoTimer);
+      logoTimer = setTimeout(function(){
+        applyLogos(next);
+        setTimeout(function(){
+          root.classList.remove('logo-swap');
+          heroWrap.classList.remove('swap');
+        }, 30);
+      }, 240);
+      clearTimeout(animTimer);
+      animTimer = setTimeout(function(){ root.classList.remove('theme-anim'); }, 700);
+    });
+  }
 
   if(!(window.CSS && CSS.registerProperty)){ root.classList.add('no-prop'); }
 
@@ -966,11 +1108,15 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
   var auSwitchText = document.getElementById('authSwitchText');
   var authMode = 'signup';
   var busyTimer = null;
+  var inFlight = false;
+  var submittedSuccessfully = false;
 
   function setBusy(on){
     clearTimeout(busyTimer);
+    inFlight = on;
     auSubmit.disabled = on;
-    if(on){ busyTimer = setTimeout(function(){ auSubmit.disabled = false; }, 10000); }
+    // Safety: never auto-unlock during an in-flight request. The submit handler
+    // is responsible for calling setBusy(false) when the response arrives.
   }
   function setMode(which){
     authMode = which === 'login' ? 'login' : 'signup';
@@ -982,10 +1128,13 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
     auSwitchText.textContent = signup ? 'Already have an account?' : 'New here?';
     auSwitch.textContent = signup ? 'Log in' : 'Create an account';
     auPass.setAttribute('autocomplete', signup ? 'new-password' : 'current-password');
+    auConfirm.setAttribute('autocomplete', signup ? 'new-password' : 'off');
     auMsg.textContent = '';
     document.getElementById('suMsg').textContent = '';
     document.getElementById('liMsg').textContent = '';
-    setBusy(false);
+    // Only clear busy if there's no request in flight; switching modes mid-request
+    // shouldn't re-enable the button.
+    if(!inFlight){ setBusy(false); }
   }
   function openModal(which){
     setMode(which || 'signup');
@@ -996,11 +1145,16 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
   function closeModal(){
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden', 'true');
-    setBusy(false);
+    // Don't clear busy here — the submit handler will do it once the response arrives.
     setTimeout(function(){
       if(overlay.classList.contains('open')){ return; }
-      authForm.reset();
-      auMsg.textContent = '';
+      // Only reset the form if the previous submit completed successfully.
+      // Otherwise we'd wipe whatever the user was typing if they reopen quickly.
+      if(submittedSuccessfully){
+        authForm.reset();
+        auMsg.textContent = '';
+        submittedSuccessfully = false;
+      }
     }, 280);
   }
 
@@ -1024,11 +1178,16 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
   });
 
   // Show whatever message the handlers write, then let the person try again.
+  // We mirror BOTH messages and surface the one matching the current mode, so a
+  // late-arriving failure message is never silently dropped on mode switch.
   function mirrorMsg(){
     var src = document.getElementById(authMode === 'signup' ? 'suMsg' : 'liMsg');
     auMsg.textContent = src.textContent;
     if(src.textContent){ setBusy(false); }
   }
+  // The MutationObserver below handles all message changes (including those
+  // that arrive after a mode switch — setMode already clears suMsg/liMsg, so
+  // any later mutation is picked up and mirrored to auMsg). No polling needed.
   if(window.MutationObserver){
     var mo = new MutationObserver(mirrorMsg);
     var moOpts = { childList: true, characterData: true, subtree: true };
@@ -1049,8 +1208,19 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
   var SB_URL = "https://bbsxacrwjezzmxqazast.supabase.co";
   var SB_KEY = "sb_publishable_zSz54-e_PF7nS9l7lzxlCQ_XSo7Trly";
   var SESSION_KEY = 'prod99_profile_id';
-  var sb = window.supabase.createClient(SB_URL, SB_KEY);
-  var P99 = window.P99 = { sb: sb, profile: null, reload: null };
+  var sb = null;
+  var supabaseFailed = false;
+  try{
+    if(!window.supabase || !window.supabase.createClient){
+      throw new Error('Supabase library not loaded');
+    }
+    sb = window.supabase.createClient(SB_URL, SB_KEY);
+  }catch(err){
+    console.error('Supabase init failed:', err);
+    supabaseFailed = true;
+    sb = null;
+  }
+  var P99 = window.P99 = { sb: sb, profile: null, reload: null, failed: supabaseFailed };
 
   var landingView = document.getElementById('landingView');
   var workspace = document.getElementById('workspace');
@@ -1059,6 +1229,22 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
   var accountName = document.getElementById('accountName');
   var navFeatures = document.getElementById('navFeatures');
   var navWorkspace = document.getElementById('navWorkspace');
+
+  // If Supabase failed to initialise, surface it on the auth button so the user
+  // isn't left wondering why nothing happens when they click "Log in".
+  if(supabaseFailed){
+    var openAuthBtn = document.getElementById('openAuth');
+    if(openAuthBtn){
+      openAuthBtn.textContent = 'Unavailable';
+      openAuthBtn.disabled = true;
+      openAuthBtn.title = 'Could not reach the login service. Reload the page to try again.';
+    }
+    var heroBtn = document.getElementById('heroSignup');
+    if(heroBtn){
+      heroBtn.textContent = 'Service unavailable';
+      heroBtn.disabled = true;
+    }
+  }
 
   function showView(profile){
     if(profile){
@@ -1086,42 +1272,114 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
     if(profile && !workspaceReady){
       workspaceReady = true;
       initWorkspace();
-    } else if(P99.reload){
+    } else if(profile && P99.reload){
+      // Only reload when we actually have a profile. Calling reload on logout
+      // would fire three Supabase queries with pid() === null.
       P99.reload();
+    } else if(!profile && workspaceReady && P99.stop){
+      // Logging out: stop the study timer so it doesn't keep ticking in the
+      // background and accidentally attribute minutes to a future session.
+      P99.stop();
     }
   }
   function storeId(id){ try{ localStorage.setItem(SESSION_KEY, id); }catch(e){} }
   function clearId(){ try{ localStorage.removeItem(SESSION_KEY); }catch(e){} }
   function toTop(){ window.scrollTo(0, 0); }
 
-  /* ---------- Goals / Study tracker / Community posts (from dashboard.html, unchanged) ---------- */
+  /* ---------- Goals / Study tracker / Community posts ---------- */
 function initWorkspace(){
 var $=function(i){return document.getElementById(i)};
 function esc(t){var d=document.createElement("div");d.textContent=t;return d.innerHTML}
-var P99=window.P99,sb=P99.sb,goals=[],logs={},posts=[],sec=0,tm=null;
+var P99=window.P99,sb=P99.sb,goals=[],logs={},posts=[];
+// Timer state. We use wall-clock time (Date.now()) for the elapsed computation so a
+// background-tab throttle can't silently drop minutes.
+var tm=null,tStart=0,tElapsed=0;
+// Per-button "in-flight" flag so rapid clicks on +10 or ♡ don't double-submit.
+var busyGoalIds={},likeInFlight={};
 function pid(){return P99.profile&&P99.profile.id}
 function need(){if(!pid()){alert('Log in first');return false}return true}
 function bad(r){if(r&&r.error){console.error(r.error);alert('Something went wrong: '+r.error.message);return true}return false}
 function pad(n){return ('0'+n).slice(-2)}
 function key(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function fmt(secs){return pad(Math.floor(secs/60))+':'+pad(secs%60)}
 /* goals */
 async function loadGoals(){goals=[];if(pid()){var r=await sb.from('goals').select('*').eq('profile_id',pid()).order('created_at');if(r.error)console.error(r.error);else goals=r.data||[]}drawGoals()}
-function drawGoals(){$('goalList').innerHTML=goals.map(function(g){return '<li><div class="gt"><span>'+esc(g.title)+'</span><b>'+g.progress+'%</b><button data-a="up" data-id="'+g.id+'">+10</button><button data-a="del" data-id="'+g.id+'" aria-label="Remove">&times;</button></div><div class="pbar"><i style="width:'+g.progress+'%"></i></div></li>'}).join('')||'<li class="empty">No goals yet. Add your first.</li>'}
+function drawGoals(){$('goalList').innerHTML=goals.map(function(g){return '<li><div class="gt"><span>'+esc(g.title)+'</span><b>'+g.progress+'%</b><button data-a="up" data-id="'+g.id+'"'+(busyGoalIds[g.id]?' disabled':'')+'>'+((busyGoalIds[g.id])?'…':'+10')+'</button><button data-a="del" data-id="'+g.id+'" aria-label="Remove">&times;</button></div><div class="pbar"><i style="width:'+g.progress+'%"></i></div></li>'}).join('')||'<li class="empty">No goals yet. Add your first.</li>'}
 $('goalForm').addEventListener('submit',async function(e){e.preventDefault();var v=$('goalIn').value.trim();if(!v)return;if(!need())return;var r=await sb.from('goals').insert({profile_id:pid(),title:v,progress:0});if(bad(r))return;$('goalIn').value='';loadGoals()});
-$('goalList').addEventListener('click',async function(e){var b=e.target.closest('button');if(!b)return;if(!need())return;var id=b.dataset.id,r;if(b.dataset.a==='del')r=await sb.from('goals').delete().eq('id',id);else{var g=goals.filter(function(x){return x.id===id})[0];if(!g)return;r=await sb.from('goals').update({progress:Math.min(100,g.progress+10)}).eq('id',id)}if(!bad(r))loadGoals()});
+$('goalList').addEventListener('click',async function(e){var b=e.target.closest('button');if(!b)return;if(!need())return;var id=b.dataset.id,r;
+  if(b.dataset.a==='del'){
+    // Optimistic delete: disable + remove from local state immediately so a
+    // rapid second click has nothing to act on.
+    busyGoalIds[id]=true; b.disabled=true;
+    r=await sb.from('goals').delete().eq('id',id);
+    busyGoalIds[id]=false;
+    if(!bad(r)){ goals=goals.filter(function(x){return x.id!==id;}); drawGoals(); }
+    return;
+  }
+  // "+10" path: prevent double-submit while a request is in flight, and
+  // apply the new value optimistically so 10 quick clicks land at +100,
+  // not +10.
+  if(busyGoalIds[id]){ return; }
+  var g=goals.filter(function(x){return x.id===id;})[0];
+  if(!g){ return; }
+  var nextVal=Math.min(100, g.progress+10);
+  busyGoalIds[id]=true; b.disabled=true; b.textContent='…';
+  g.progress=nextVal; drawGoals();   // optimistic UI update
+  r=await sb.from('goals').update({progress:nextVal}).eq('id',id);
+  busyGoalIds[id]=false;
+  if(!bad(r)){ loadGoals(); }        // re-sync with server truth
+  else { loadGoals(); }              // re-sync even on error to revert
+});
 /* study tracker */
 async function loadLogs(){logs={};if(pid()){var s=new Date();s.setDate(s.getDate()-6);var r=await sb.from('study_logs').select('date,minutes').eq('profile_id',pid()).gte('date',key(s));if(r.error)console.error(r.error);else(r.data||[]).forEach(function(x){logs[x.date]=x.minutes})}drawBars()}
 function drawBars(){var days=[],mx=1,i,d,m;for(i=6;i>=0;i--){d=new Date();d.setDate(d.getDate()-i);m=logs[key(d)]||0;days.push([d,m]);mx=Math.max(mx,m)}
 $('bars').innerHTML=days.map(function(x){return '<div title="'+x[1]+' min"><i style="height:'+Math.round(x[1]/mx*70)+'px"></i>'+'SMTWTFS'[x[0].getDay()]+'</div>'}).join('');$('today').textContent=(logs[key(new Date())]||0)+' min today'}
-function fmt(n){return pad(Math.floor(n/60))+':'+pad(n%60)}
+function currentSecs(){ return tElapsed + (tm ? Math.floor((Date.now()-tStart)/1000) : 0); }
+function tickClock(){ $('clock').textContent = fmt(currentSecs()); }
+function stopTimer(logMinutesIfRunning){
+  if(tm){ clearInterval(tm); tm=null; }
+  var t=$('trk');
+  if(t){ t.classList.remove('running'); }
+  var btn=$('clkBtn'); if(btn){ btn.textContent='Start'; }
+  if(logMinutesIfRunning && currentSecs()>0){
+    var min=Math.max(1, Math.round(currentSecs()/60));
+    if(need()){ logMinutes(min); }
+  }
+  tStart=0; tElapsed=0; tickClock();
+}
 async function logMinutes(min){var t=key(new Date()),r=await sb.from('study_logs').select('id,minutes').eq('profile_id',pid()).eq('date',t).maybeSingle();if(bad(r))return;if(r.data)r=await sb.from('study_logs').update({minutes:r.data.minutes+min}).eq('id',r.data.id);else r=await sb.from('study_logs').insert({profile_id:pid(),date:t,minutes:min});if(!bad(r))loadLogs()}
-$('clkBtn').addEventListener('click',function(){var t=$('trk');if(tm){clearInterval(tm);tm=null;t.classList.remove('running');this.textContent='Start';var min=Math.max(1,Math.round(sec/60));sec=0;$('clock').textContent='00:00';if(need())logMinutes(min)}else{t.classList.add('running');this.textContent='Stop & log';tm=setInterval(function(){sec++;$('clock').textContent=fmt(sec)},1000)}});
+$('clkBtn').addEventListener('click',function(){
+  if(tm){
+    // Stop & log.
+    stopTimer(true);
+  } else {
+    // Start.
+    var t=$('trk');
+    if(t){ t.classList.add('running'); }
+    this.textContent='Stop & log';
+    tStart=Date.now();
+    tm=setInterval(tickClock,1000);
+    tickClock();
+  }
+});
 /* posts */
 async function loadPosts(){var r=await sb.from('posts').select('*').order('created_at',{ascending:false});if(r.error)console.error(r.error);else posts=r.data||[];drawFeed()}
-function drawFeed(){$('feed').innerHTML=posts.map(function(p){return '<li class="post"><small><b>'+esc(p.name)+'</b><span class="badge">'+esc(p.role)+'</span></small><p>'+esc(p.content)+'</p><button class="like" data-id="'+p.id+'">&#9825; '+p.likes+'</button></li>'}).join('')||'<li class="empty">No posts yet. Start the conversation.</li>'}
+function drawFeed(){$('feed').innerHTML=posts.map(function(p){return '<li class="post"><small><b>'+esc(p.name)+'</b><span class="badge">'+esc(p.role)+'</span></small><p>'+esc(p.content)+'</p><button class="like" data-id="'+p.id+'"'+(likeInFlight[p.id]?' disabled':'')+'>&#9825; '+(likeInFlight[p.id]?'…':p.likes)+'</button></li>'}).join('')||'<li class="empty">No posts yet. Start the conversation.</li>'}
 $('postForm').addEventListener('submit',async function(e){e.preventDefault();var v=$('postIn').value.trim();if(!v)return;if(!need())return;var r=await sb.from('posts').insert({profile_id:pid(),name:P99.profile.username||'Guest',role:$('postRole').value,content:v,likes:0});if(bad(r))return;$('postIn').value='';loadPosts()});
-$('feed').addEventListener('click',async function(e){var b=e.target.closest('.like');if(!b)return;var r=await sb.rpc('increment_like',{post_id:b.dataset.id});if(!bad(r))loadPosts()});
+$('feed').addEventListener('click',async function(e){var b=e.target.closest('.like');if(!b)return;if(!need())return;
+  var id=b.dataset.id;
+  if(likeInFlight[id]){ return; }  // debounce rapid double-clicks
+  likeInFlight[id]=true; b.disabled=true;
+  // Optimistic: bump local count immediately so the user sees feedback.
+  var p=posts.filter(function(x){return x.id===id;})[0];
+  if(p){ p.likes=(p.likes||0)+1; drawFeed(); }
+  var r=await sb.rpc('increment_like',{post_id:id});
+  likeInFlight[id]=false;
+  if(!bad(r)){ loadPosts(); } else { loadPosts(); }
+});
 P99.reload=function(){loadGoals();loadLogs();loadPosts()};
+// Public stop so the outer scope can halt the timer on logout (see setProfile).
+P99.stop=function(){ stopTimer(false); };
 P99.reload();
   }
 
@@ -1130,12 +1388,30 @@ P99.reload();
     var id = null;
     try{ id = localStorage.getItem(SESSION_KEY); }catch(e){}
     if(!id){ setProfile(null); return; }
+    // If Supabase itself failed to initialise, we can't verify the session — leave
+    // the user logged out and surface the failure on the auth button.
+    if(supabaseFailed || !sb){
+      setProfile(null);
+      return;
+    }
     try{
       var r = await sb.from('profiles').select('id,username').eq('id', id).maybeSingle();
-      if(r.data){ setProfile(r.data); }
-      else { clearId(); setProfile(null); }
+      if(r.error){
+        // Supabase-level error (RLS, schema, etc.). Don't clear the stored id —
+        // it may be transient and the user may still be logged in on retry.
+        console.error('Session restore error:', r.error);
+        setProfile(null);
+      } else if(r.data){
+        setProfile(r.data);
+      } else {
+        // No matching profile — the stored id is genuinely invalid. Clear it.
+        clearId();
+        setProfile(null);
+      }
     }catch(err){
-      console.error(err);
+      // Network error: don't clear the stored id — the user may still be logged in
+      // and a refresh could restore them. Just show the logged-out view this time.
+      console.error('Session restore failed (likely network):', err);
       setProfile(null);
     }
   }
@@ -1149,6 +1425,9 @@ P99.reload();
   // Shared auth-function caller.
   // Returns { ok: true, profile } or { ok: false, code, message }
   async function callAuthFn(name, username, password){
+    if(supabaseFailed || !sb){
+      return { ok:false, message:'Login service is unavailable. Reload the page to try again.' };
+    }
     try{
       var r = await sb.functions.invoke(name, { body: { username: username, password: password } });
       if(r.error){
@@ -1176,31 +1455,42 @@ P99.reload();
 
     if(!username || pass.length < 6){
       msg.textContent = 'Pick a username and a password of at least 6 characters.';
+      setBusy(false);
       return;
     }
     if(username.length < 3){
       msg.textContent = 'Username must be at least 3 characters.';
+      setBusy(false);
       return;
     }
     if(!/^[a-z0-9_]+$/.test(username)){
       msg.textContent = 'Username can only use letters, numbers, and underscores.';
+      setBusy(false);
       return;
     }
     if(pass !== confirm){
       msg.textContent = 'Passwords don\'t match.';
+      setBusy(false);
       return;
     }
     var res = await callAuthFn('signup', username, pass);
     if(!res.ok){
-      msg.textContent = (res.code === 409 || res.message === 'Username taken')
-        ? 'That username is already taken.'
-        : 'Something went wrong. Try again.';
+      if(res.message && res.message.indexOf('unavailable') > -1){
+        msg.textContent = res.message;
+      } else {
+        msg.textContent = (res.code === 409 || res.message === 'Username taken')
+          ? 'That username is already taken.'
+          : 'Something went wrong. Try again.';
+      }
+      setBusy(false);
       return;
     }
     storeId(res.profile.id);
     setProfile(res.profile);
     msg.textContent = '';
     panelSignup.reset();
+    submittedSuccessfully = true;
+    setBusy(false);
     closeModal();
     toTop();
   });
@@ -1212,27 +1502,29 @@ P99.reload();
     var pass = document.getElementById('liPassword').value;
     var res = await callAuthFn('login', username, pass);
     if(!res.ok){
-      msg.textContent = 'No account matches that username and password.';
+      if(res.message && res.message.indexOf('unavailable') > -1){
+        msg.textContent = res.message;
+      } else {
+        msg.textContent = 'No account matches that username and password.';
+      }
+      setBusy(false);
       return;
     }
     storeId(res.profile.id);
     setProfile(res.profile);
     msg.textContent = '';
     panelLogin.reset();
+    submittedSuccessfully = true;
+    setBusy(false);
     closeModal();
     toTop();
   });
 
-  /* ---------- Scroll reveal (landing sections only) ---------- */
-  var els = document.querySelectorAll('#landingView .eyebrow, #landingView h1.display, #landingView .hero-text p, #landingView .hero-ctas, #landingView .features h2, #landingView .feature-row');
-  var io = 'IntersectionObserver' in window ? new IntersectionObserver(function(en){
-    en.forEach(function(x){ if(x.isIntersecting){ x.target.classList.add('in'); io.unobserve(x.target); } });
-  }, { threshold: .12 }) : null;
-  els.forEach(function(el, i){
-    el.classList.add('rv');
-    el.style.setProperty('--d', (i % 4) * .08 + 's');
-    if(io){ io.observe(el); } else { el.classList.add('in'); }
-  });
+  /* ---------- Scroll reveal (landing sections) ----------
+     The redesign uses the `.rx` class (handled by the second IIFE below) for
+     reveal-on-scroll. The legacy `.rv` selector below was targeting the old
+     HTML structure (.eyebrow, h1.display, .hero-text, .feature-row) which no
+     longer exists, so it has been removed to avoid dead code. */
 
   restoreSession();
 })();
@@ -1259,21 +1551,53 @@ var DPR=Math.min(window.devicePixelRatio||1,1.5),lastT=0;
 
 /* ---- Layer 1: aurora (WebGL, eases between themes in ~700ms) ---- */
 var AU=(function(){
-var cv=$("aurora"),gl=null,ok=false,raf=0,t0=0,cur=null,prog,U={},K=["b","a","c","d"];
+var cv=$("aurora"),gl=null,ok=false,failed=false,raf=0,t0=0,cur=null,prog,U={},K=["b","a","c","d"];
 function fail(){R.classList.add("no-gl");cv.style.display="none"}
 function hx(s){return[1,3,5].map(function(i){return parseInt(s.substr(i,2),16)/255})}
-var TH={light:{k:.3,b:hx("#F7F1EF"),a:hx("#7A0C1E"),c:hx("#D49A6A"),d:hx("#4A0812")},dark:{k:1,b:hx("#150909"),a:hx("#7A0C1E"),c:hx("#8A4A3A"),d:hx("#4A0812")}};
+// In dark mode, --wine is #D6435A. Match that so the aurora and the rest of the
+// page don't show two different wine colours.
+var TH={light:{k:.3,b:hx("#F7F1EF"),a:hx("#7A0C1E"),c:hx("#D49A6A"),d:hx("#4A0812")},dark:{k:1,b:hx("#150909"),a:hx("#D6435A"),c:hx("#E0795A"),d:hx("#4A0812")}};
 function tgt(){return TH[R.getAttribute("data-theme")==="dark"?"dark":"light"]}
 function cp(o){return JSON.parse(JSON.stringify(o))}
 var FS="precision mediump float;uniform vec2 r;uniform float t,k;uniform vec3 b,a,c,d;float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+vec2(1.,1.)),f.x),f.y);}float fb(vec2 p){float s=0.,m=.5;for(int i=0;i<4;i++){s+=m*n(p);p*=2.;m*=.5;}return s;}void main(){vec2 u=gl_FragCoord.xy/r;vec2 p=u*vec2(r.x/r.y,1.)*1.4;float q=fb(p+vec2(t*.05,0.));float w=fb(p*1.3+q*2.+vec2(0.,-t*.04));vec3 o=b;o=mix(o,a,smoothstep(.35,.85,w)*.6*k*(1.-u.y*.5));o=mix(o,c,smoothstep(.45,.9,fb(p*.8+q+7.+t*.03))*.4*k*u.x);o=mix(o,d,smoothstep(.4,.9,fb(p*1.1-q+3.))*.5*k*(1.-u.x));gl_FragColor=vec4(o,1.);}";
 function sh(t,s){var o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return gl.getShaderParameter(o,gl.COMPILE_STATUS)?o:null}
-function init(){try{gl=cv.getContext("webgl",{antialias:false,alpha:false,powerPreference:"low-power"})}catch(e){}
-if(!gl)return false;var v=sh(gl.VERTEX_SHADER,"attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}"),f=sh(gl.FRAGMENT_SHADER,FS);if(!v||!f)return false;
-prog=gl.createProgram();gl.attachShader(prog,v);gl.attachShader(prog,f);gl.linkProgram(prog);if(!gl.getProgramParameter(prog,gl.LINK_STATUS))return false;
-gl.useProgram(prog);gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
-var lp=gl.getAttribLocation(prog,"p");gl.enableVertexAttribArray(lp);gl.vertexAttribPointer(lp,2,gl.FLOAT,false,0,0);
-["r","t","k","b","a","c","d"].forEach(function(n){U[n]=gl.getUniformLocation(prog,n)});cur=cp(tgt());
-cv.addEventListener("webglcontextlost",function(e){e.preventDefault();stop();fail()});return true}
+// Listen for context loss exactly once, and reset state so the next sync() can
+// rebuild a fresh context.
+cv.addEventListener("webglcontextlost",function(e){
+  e.preventDefault();
+  cancelAnimationFrame(raf); raf=0;
+  ok=false; failed=true;
+  cv.style.display="none";
+  R.classList.add("no-gl");
+});
+cv.addEventListener("webglcontextrestored",function(e){
+  // Reset the failed flag so sync() will try init() again.
+  failed=false; ok=false;
+  R.classList.remove("no-gl");
+  sync();
+});
+function init(){
+  if(failed){ return false; }
+  try{gl=cv.getContext("webgl",{antialias:false,alpha:false,powerPreference:"low-power"})}catch(e){}
+  if(!gl){ return false; }
+  var v=sh(gl.VERTEX_SHADER,"attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}"),f=sh(gl.FRAGMENT_SHADER,FS);
+  if(!v||!f){
+    // Clean up shaders we just created so we don't leak GPU memory.
+    if(v){ gl.deleteShader(v); }
+    if(f){ gl.deleteShader(f); }
+    return false;
+  }
+  prog=gl.createProgram();gl.attachShader(prog,v);gl.attachShader(prog,f);gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog,gl.LINK_STATUS)){
+    // Link failed: delete the program and the shaders.
+    gl.deleteProgram(prog); gl.deleteShader(v); gl.deleteShader(f);
+    prog=null; return false;
+  }
+  gl.useProgram(prog);gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  var lp=gl.getAttribLocation(prog,"p");gl.enableVertexAttribArray(lp);gl.vertexAttribPointer(lp,2,gl.FLOAT,false,0,0);
+  ["r","t","k","b","a","c","d"].forEach(function(n){U[n]=gl.getUniformLocation(prog,n)});cur=cp(tgt());
+  return true;
+}
 function size(){var w=Math.max(2,innerWidth*DPR*.5|0),h=Math.max(2,innerHeight*DPR*.5|0);if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;gl.viewport(0,0,w,h)}}
 function frame(ts){var dt=Math.min(.1,(ts-lastA)/1000);lastA=ts;var e=1-Math.exp(-dt/.23),T=tgt();cur.k+=(T.k-cur.k)*e;
 K.forEach(function(n){for(var i=0;i<3;i++)cur[n][i]+=(T[n][i]-cur[n][i])*e});size();
@@ -1282,25 +1606,42 @@ gl.drawArrays(gl.TRIANGLES,0,3);raf=requestAnimationFrame(frame)}
 var lastA=0;
 function stop(){cancelAnimationFrame(raf);raf=0}
 function sync(){stop();if(calm()){cv.style.display="none";return}
-if(!ok){ok=init();if(!ok){fail();return}}
+if(!ok){
+  if(failed){ return; }  // wait for webglcontextrestored
+  ok=init();
+  if(!ok){
+    if(!failed){ fail(); }  // only mark as no-gl on genuine init failure, not context loss
+    return;
+  }
+}
 cv.style.display="";R.classList.remove("no-gl");t0=t0||performance.now();lastA=performance.now();raf=requestAnimationFrame(frame)}
 return{sync:sync}})();
 
 /* ---- Layer 2: wireframe shapes (2D canvas, pauses when calm) ---- */
 var SHP=(function(){
 var cv=$("shapes"),cx=cv.getContext("2d"),raf=0,sA=.09,tx=0,ty=0,px=0,py=0,last=0,S=[];
-function torus(){var v=[],e=[],U=28,V=12,i,j;for(i=0;i<U;i++)for(j=0;j<V;j++){var a=i/U*6.2832,b=j/V*6.2832,r=1+.42*Math.cos(b);v.push([r*Math.cos(a)/1.42,.42*Math.sin(b)/1.42,r*Math.sin(a)/1.42]);e.push([i*V+j,i*V+(j+1)%V],[i*V+j,((i+1)%U)*V+j])}return{v:v,e:e}}
-function ico(){var p=(1+Math.sqrt(5))/2,n=Math.sqrt(1+p*p),b=[[0,1,p],[0,1,-p],[0,-1,p],[0,-1,-p],[1,p,0],[1,-p,0],[-1,p,0],[-1,-p,0],[p,0,1],[p,0,-1],[-p,0,1],[-p,0,-1]],e=[];
-b.forEach(function(a,i){for(var j=i+1;j<12;j++){var c=b[j],q=Math.hypot(a[0]-c[0],a[1]-c[1],a[2]-c[2]);if(q<2.05)e.push([i,j])}});return{v:b.map(function(a){return[a[0]/n,a[1]/n,a[2]/n]}),e:e}}
 function octa(){var v=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]],e=[];for(var i=0;i<6;i++)for(var j=i+1;j<6;j++)if(j!==(i^1))e.push([i,j]);return{v:v,e:e}}
 var sp=0,sv=0,lastScroll=(typeof scrollY!=="undefined"?scrollY:0);
 S=[
-    Object.assign(torus(),{x:.82,y:.22,r:.26,wx:.05,wy:.035,ampX:-90,ampY:120,rotX:.6,rotY:.9,rotBoost:1.5,sc:.25,k:1}),
-    Object.assign(ico(),{x:.12,y:.58,r:.12,wx:.08,wy:.06,ampX:60,ampY:180,rotX:1.2,rotY:-.7,rotBoost:2.5,sc:.4,k:1}),
     Object.assign(octa(),{x:.88,y:.84,r:.05,wx:.12,wy:.09,ampX:-40,ampY:80,rotX:-1.5,rotY:1.1,rotBoost:3,sc:.5,k:0})
   ];
 var tcx=document.createElement("canvas").getContext("2d");
-function wine(){tcx.fillStyle="#7A0C1E";tcx.fillStyle=getComputedStyle(R).getPropertyValue("--wine").trim()||"#7A0C1E";var h=tcx.fillStyle;return h.charAt(0)==="#"?[parseInt(h.substr(1,2),16),parseInt(h.substr(3,2),16),parseInt(h.substr(5,2),16)]:[122,12,30]}
+// Cache the parsed wine colour so we don't run getComputedStyle on every frame.
+// It's recomputed only when the theme attribute on <html> changes.
+var cachedWine=null, cachedWineTheme=null;
+function wine(){
+  var theme = R.getAttribute("data-theme");
+  if(cachedWineTheme !== theme){
+    cachedWineTheme = theme;
+    tcx.fillStyle = "#7A0C1E";
+    tcx.fillStyle = getComputedStyle(R).getPropertyValue("--wine").trim() || "#7A0C1E";
+    var h = tcx.fillStyle;
+    cachedWine = h.charAt(0) === "#"
+      ? [parseInt(h.substr(1,2),16), parseInt(h.substr(3,2),16), parseInt(h.substr(5,2),16)]
+      : [122,12,30];
+  }
+  return cachedWine;
+}
 function frame(ts){raf=requestAnimationFrame(frame);var dt=Math.min(.1,(ts-last)/1000),t=ts/1000;last=ts;
 var w=innerWidth,h=innerHeight,W=w*DPR|0,H=h*DPR|0;
 var rawScroll=window.scrollY||window.pageYOffset||0;
@@ -1314,7 +1655,7 @@ tx+=(px-tx)*e;ty+=(py-ty)*e;cv.style.transform="perspective(1200px) rotateX("+(-
 var m=Math.min(w,h),sc=Math.max(1,R.scrollHeight-h),p=Math.min(1,Math.max(0,scrollY/sc)),c=wine();
 sp=p;
 cx.lineWidth=1.2;
-S.forEach(function(o,n){var al=sA*(n===2?Math.max(0,Math.min(1,(p-.6)/.3)):1);if(al<.004)return;
+S.forEach(function(o,n){var al=sA*(n===S.length-1?Math.max(0,Math.min(1,(p-.6)/.3)):1);if(al<.004)return;
 cx.strokeStyle="rgba("+c[0]+","+c[1]+","+c[2]+","+al.toFixed(3)+")";
 var ax=t*o.wx + sp*o.rotX + sv*o.rotBoost;
 var ay=t*o.wy + sp*o.rotY + sv*o.rotBoost;
@@ -1339,7 +1680,15 @@ steps.style.setProperty("--p",p.toFixed(3));stepEls.forEach(function(s){s.classL
 addEventListener("scroll",function(){if(!tick){tick=true;requestAnimationFrame(onScroll)}},{passive:true});onScroll();
 
 /* ---- Reveal (translate + opacity only, 80ms sibling stagger) ---- */
-var rx=$$(".rx");rx.forEach(function(el){var i=Array.prototype.indexOf.call(el.parentNode.children,el);el.style.setProperty("--d",Math.min(i,5)*.08+"s")});
+var rx=$$(".rx");
+// Compute the stagger index only among .rx siblings (ignoring non-.rx
+// children in the same parent), so the delay sequence isn't bumped by
+// irrelevant siblings.
+rx.forEach(function(el){
+  var rxSiblings = Array.prototype.filter.call(el.parentNode.children, function(c){ return c.classList && c.classList.contains("rx"); });
+  var i = Array.prototype.indexOf.call(rxSiblings, el);
+  el.style.setProperty("--d", Math.min(i, 5) * .08 + "s");
+});
 if("IntersectionObserver" in window){var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){var el=x.target;el.classList.add("in");io.unobserve(el);setTimeout(function(){el.classList.remove("rx","in")},1300)}})},{threshold:.12});rx.forEach(function(el){io.observe(el)})}
 else rx.forEach(function(el){el.classList.remove("rx")});
 
@@ -1348,15 +1697,42 @@ var lv=$("landingView");function lvSync(){R.classList.toggle("in-app",lv.style.d
 if(window.MutationObserver)new MutationObserver(lvSync).observe(lv,{attributes:true,attributeFilter:["style"]});lvSync();
 
 /* ---- Mockup tabs (sample data only) ---- */
-var tabs=$$(".tabs button"),panels=$$(".mp"),curTab=0,secs=0;
-function pick(i,focus){curTab=i;tabs.forEach(function(b,j){var s=i===j;b.setAttribute("aria-selected",s);b.tabIndex=s?0:-1;panels[j].classList.toggle("on",s)});if(focus)tabs[i].focus();
+var tabs=$$(".tabs button"),panels=$$(".mp"),curTab=0,secs=0,pickFirst=true;
+function pick(i,focus){
+  // First call must always run so the sample-data bars/pbars get their target
+  // widths/heights applied — otherwise they render at default (100% / 4px).
+  if(!pickFirst && i === curTab && !focus){ return; }
+  pickFirst = false;
+  curTab=i;tabs.forEach(function(b,j){var s=i===j;b.setAttribute("aria-selected",s);b.tabIndex=s?0:-1;panels[j].classList.toggle("on",s)});if(focus)tabs[i].focus();
 $$("[data-w],[data-h]",panels[i]).forEach(function(el){var w=el.dataset.w,h=el.dataset.h;if(w)el.style.width=0;if(h)el.style.height=0;void el.offsetWidth;requestAnimationFrame(function(){if(w)el.style.width=w+"%";if(h)el.style.height=h+"px"})})}
 tabs.forEach(function(b,i){b.addEventListener("click",function(){pick(i)});
 b.addEventListener("keydown",function(e){var n=e.key==="ArrowRight"?(i+1)%3:e.key==="ArrowLeft"?(i+2)%3:e.key==="Home"?0:e.key==="End"?2:-1;if(n>-1){e.preventDefault();pick(n,true)}})});
 var fr=d.querySelector(".frame");
 if(fr&&"IntersectionObserver" in window)new IntersectionObserver(function(e,o){if(e[0].isIntersecting){pick(curTab);o.disconnect()}},{threshold:.3}).observe(fr);
 var mk=$("mkClock");function p2(n){return("0"+n).slice(-2)}
-setInterval(function(){if(!panels[1].classList.contains("on")||calm()||d.hidden)return;secs++;var t=1500+secs;mk.textContent=p2(Math.floor(t/60))+":"+p2(t%60)},1000);
+// Use a self-managed interval that pauses when the tab is hidden, instead of
+// running forever and relying on the callback to short-circuit. This avoids
+// battery drain on background tabs.
+var mkInterval=null;
+function startMkClock(){
+  if(mkInterval){ return; }
+  secs = 0;
+  mkInterval=setInterval(function(){
+    if(!panels[1].classList.contains("on")||calm()) return;
+    secs++; var t=1500+secs; mk.textContent=p2(Math.floor(t/60))+":"+p2(t%60);
+  },1000);
+}
+function stopMkClock(){
+  if(mkInterval){ clearInterval(mkInterval); mkInterval=null; }
+  // Reset the mock clock to its initial display so re-entering the tab is clean.
+  if(mk){ mk.textContent="25:00"; }
+  secs = 0;
+}
+startMkClock();
+d.addEventListener("visibilitychange", function(){
+  if(d.hidden){ stopMkClock(); }
+  else { startMkClock(); }
+});
 
 /* ---- Device mode: drives the existing #powerToggle via .click() ---- */
 var hi=$("modeHigh"),lo=$("modeLow");
@@ -1372,16 +1748,21 @@ $("cmdKbd").textContent=/Mac|iPhone|iPad/.test(navigator.platform)?"⌘K":"Ctrl 
 function go(id){return function(){var e=$(id);if(e)e.scrollIntoView({behavior:calm()?"auto":"smooth"})}}
 function build(){var inApp=R.classList.contains("in-app"),out=$("authButtons").style.display==="none";items=[];
 if(!inApp)[["Steps","steps"],["Inside","inside"],["Features","features"],["Built","built"],["FAQ","faq"]].forEach(function(x){items.push({t:"Jump to "+x[0],g:"Section",f:go(x[1])})});
-items.push({t:"Open workspace",g:"App",f:function(){if($("workspace").style.display==="none")$("openAuth").click();else go("workspace")()}});
+items.push({t:"Open workspace",g:"App",f:function(){
+  // Only open the auth modal if the user isn't already authenticated; otherwise
+  // just scroll to the workspace. This avoids opening login when already logged in.
+  if(out){ go("workspace")(); }
+  else { $("openAuth").click(); }
+}});
 if(!out){items.push({t:"Log in",g:"Account",f:function(){$("openAuth").click()}});items.push({t:"Create an account",g:"Account",f:function(){$("heroSignup").click()}})}
 else items.push({t:"Log out",g:"Account",f:function(){$("logoutBtn").click()}});
 items.push({t:"Toggle theme",g:"Settings",f:function(){$("themeToggle").click()}});
 items.push({t:"Toggle device mode",g:"Settings",f:function(){$("powerToggle").click()}})}
-function mark(){$$("li",cl).forEach(function(li,i){li.setAttribute("aria-selected",i===sel)});var el=$("ck"+sel);if(el&&el.scrollIntoView)el.scrollIntoView({block:"nearest"});ci.setAttribute("aria-activedescendant","ck"+sel)}
+function mark(){$$("li",cl).forEach(function(li,i){li.setAttribute("aria-selected",i===sel)});var el=$("ck"+sel);if(el&&el.scrollIntoView)el.scrollIntoView({block:"nearest"});if(shown.length){ci.setAttribute("aria-activedescendant","ck"+sel);}else{ci.removeAttribute("aria-activedescendant");}}
 function render(){var q=ci.value.toLowerCase().trim();shown=items.filter(function(x){return!q||(x.t+" "+x.g).toLowerCase().indexOf(q)>-1});sel=Math.min(sel,Math.max(0,shown.length-1));cl.innerHTML="";
 shown.forEach(function(x,i){var li=d.createElement("li");li.id="ck"+i;li.setAttribute("role","option");li.setAttribute("aria-selected",i===sel);li.innerHTML="<span></span><small></small>";li.firstChild.textContent=x.t;li.lastChild.textContent=x.g;
 li.addEventListener("click",function(){run(i)});li.addEventListener("pointermove",function(){if(sel!==i){sel=i;mark()}});cl.appendChild(li)});
-if(!shown.length)cl.innerHTML='<li class="empty">No matches</li>';ci.setAttribute("aria-activedescendant",shown.length?"ck"+sel:"")}
+if(!shown.length){cl.innerHTML='<li class="empty" role="presentation">No matches</li>';ci.removeAttribute("aria-activedescendant");}else{ci.setAttribute("aria-activedescendant","ck"+sel);}}
 function closeCk(skip){ck.hidden=true;if(!skip&&prev&&prev.focus)prev.focus()}
 function run(i){var x=shown[i];if(!x)return;closeCk(true);setTimeout(x.f,30)}
 function openCk(){if($("overlay").classList.contains("open"))return;build();prev=d.activeElement;ci.value="";sel=0;ck.hidden=false;render();ci.focus()}
@@ -1392,59 +1773,27 @@ if(e.key==="Escape"){e.preventDefault();closeCk()}
 else if(e.key==="ArrowDown"){e.preventDefault();sel=(sel+1)%n;mark()}
 else if(e.key==="ArrowUp"){e.preventDefault();sel=(sel+n-1)%n;mark()}
 else if(e.key==="Enter"){e.preventDefault();run(sel)}
-else if(e.key==="Tab"){e.preventDefault()}});
+// Allow Tab to close the palette and continue normal focus order, instead
+// of trapping the user inside the input.
+else if(e.key==="Tab"){closeCk()}});
 ci.addEventListener("input",function(){sel=0;render()});
 ck.addEventListener("mousedown",function(e){if(e.target===ck)closeCk()});
 $("cmdBtn").addEventListener("click",openCk);
 })();
 </script>
 <script>
-/* Additive only: WebGL halo behind the hero logo + card spotlight. Touches no existing logic. */
+/* Card spotlight (cursor-follow glow). The logo is left plain: no halo, no WebGL. */
 (function(){"use strict";
-var R=document.documentElement,wrap=document.getElementById("heroLogoWrap");
 document.addEventListener("pointermove",function(e){var c=e.target.closest&&e.target.closest(".fcard");if(!c)return;var b=c.getBoundingClientRect();c.style.setProperty("--mx",(e.clientX-b.left)+"px");c.style.setProperty("--my",(e.clientY-b.top)+"px")},{passive:true});
-if(!wrap)return;
-var cv=document.createElement("canvas");cv.id="logoGL";cv.setAttribute("aria-hidden","true");wrap.insertBefore(cv,wrap.firstChild);
-var rm=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)"),gl=null,U={},ok=false,failed=false,raf=0,seen=true,t0=performance.now(),last=0,cur=null,px=0,py=0,sx=0,sy=0,DPR=Math.min(window.devicePixelRatio||1,1.5);
-function calm(){return R.getAttribute("data-power")==="low"||!!(rm&&rm.matches)}
-function hx(s){return[1,3,5].map(function(i){return parseInt(s.substr(i,2),16)/255})}
-var TH={light:{k:.85,a:hx("#7A0C1E"),c:hx("#D49A6A"),d:hx("#4A0812")},dark:{k:1,a:hx("#D6435A"),c:hx("#E0795A"),d:hx("#8C1C2B")}};
-function tgt(){return TH[R.getAttribute("data-theme")==="dark"?"dark":"light"]}
-var FS=["#ifdef GL_FRAGMENT_PRECISION_HIGH","precision highp float;","#else","precision mediump float;","#endif",
-"uniform vec2 r,m;uniform float t,k;uniform vec3 a,c,d;",
-"float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}",
-"float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+vec2(1.,1.)),f.x),f.y);}",
-"float fbm(vec2 p){float v=0.,s=.5;for(int i=0;i<4;i++){v+=s*n(p);p=p*2.03+7.1;s*=.5;}return v;}",
-"void main(){vec2 uv=(gl_FragCoord.xy-.5*r)/r.y-m*.025;float R=length(uv),an=atan(uv.y,uv.x);vec2 cs=vec2(cos(an),sin(an));",
-"float w=(fbm(cs*1.4+vec2(t*.14,-t*.1))-.5)*.14+(fbm(uv*3.+t*.18)-.5)*.04;",
-"float x1=(R-.27-w)*18.,x2=(R-.35-w*1.5)*26.;",
-"float ring=exp(-x1*x1),ring2=exp(-x2*x2)*.45,halo=smoothstep(.5,.1,R)*.3;",
-"float flow=.5+.5*sin(an*2.+t*.55+fbm(uv*2.+t*.1)*3.);",
-"vec3 col=mix(mix(a,c,flow),d,smoothstep(.2,.5,R));",
-"float al=(ring*.8+ring2+halo)*k*smoothstep(.5,.38,R);gl_FragColor=vec4(col*al,al);}"].join("\n");
-function sh(t,s){var o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return gl.getShaderParameter(o,gl.COMPILE_STATUS)?o:null}
-function init(){try{gl=cv.getContext("webgl",{alpha:true,premultipliedAlpha:true,antialias:false,powerPreference:"low-power"})}catch(e){}
-if(!gl)return false;var v=sh(gl.VERTEX_SHADER,"attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}"),f=sh(gl.FRAGMENT_SHADER,FS);if(!v||!f)return false;
-var pr=gl.createProgram();gl.attachShader(pr,v);gl.attachShader(pr,f);gl.linkProgram(pr);if(!gl.getProgramParameter(pr,gl.LINK_STATUS))return false;
-gl.useProgram(pr);gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
-var lp=gl.getAttribLocation(pr,"p");gl.enableVertexAttribArray(lp);gl.vertexAttribPointer(lp,2,gl.FLOAT,false,0,0);
-["r","m","t","k","a","c","d"].forEach(function(n){U[n]=gl.getUniformLocation(pr,n)});cur=JSON.parse(JSON.stringify(tgt()));
-cv.addEventListener("webglcontextlost",function(e){e.preventDefault();cancelAnimationFrame(raf);failed=true;ok=false;cv.style.display="none";wrap.classList.remove("lg-ok")});return true}
-function frame(ts){raf=requestAnimationFrame(frame);var dt=Math.min(.1,(ts-last)/1000);last=ts;var e=1-Math.exp(-dt/.25),T=tgt();
-cur.k+=(T.k-cur.k)*e;["a","c","d"].forEach(function(n){for(var i=0;i<3;i++)cur[n][i]+=(T[n][i]-cur[n][i])*e});sx+=(px-sx)*e;sy+=(py-sy)*e;
-var w=Math.max(2,Math.round(cv.clientWidth*DPR));if(cv.width!==w){cv.width=cv.height=w;gl.viewport(0,0,w,w)}
-gl.uniform2f(U.r,w,w);gl.uniform1f(U.t,(ts-t0)/1000);gl.uniform1f(U.k,cur.k);gl.uniform2f(U.m,sx,sy);["a","c","d"].forEach(function(n){gl.uniform3fv(U[n],cur[n])});gl.drawArrays(gl.TRIANGLES,0,3)}
-function sync(){cancelAnimationFrame(raf);raf=0;if(failed)return;
-if(calm()){cv.style.display="none";wrap.classList.remove("lg-ok");return}
-cv.style.display="";if(!ok){ok=init();if(!ok){failed=true;cv.style.display="none";return}}
-wrap.classList.add("lg-ok");if(seen&&!document.hidden){last=performance.now();raf=requestAnimationFrame(frame)}}
-document.addEventListener("pointermove",function(e){px=e.clientX/innerWidth*2-1;py=1-e.clientY/innerHeight*2},{passive:true});
-document.addEventListener("visibilitychange",sync);
-if(rm&&rm.addEventListener)rm.addEventListener("change",sync);
-if(window.MutationObserver)new MutationObserver(sync).observe(R,{attributes:true,attributeFilter:["data-power"]});
-if("IntersectionObserver" in window)new IntersectionObserver(function(en){seen=en[0].isIntersecting;sync()}).observe(wrap);
-sync();
 })();
+</script>
+<script>
+/* Geometry fallback: only where CSS scroll-driven animation is unsupported. Sets --sp (0..1). */
+(function(){var R=document.documentElement;
+if(window.CSS&&CSS.supports&&CSS.supports("animation-timeline:scroll()"))return;
+R.classList.add("geo-js");var t=false;
+function u(){var m=Math.max(1,R.scrollHeight-innerHeight);R.style.setProperty("--sp",Math.min(1,Math.max(0,scrollY/m)).toFixed(4));t=false}
+addEventListener("scroll",function(){if(!t){t=true;requestAnimationFrame(u)}},{passive:true});addEventListener("resize",u);u()})();
 </script>
 </body>
 </html>
