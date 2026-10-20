@@ -613,8 +613,8 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
 <style id="changes-link">
 /* "See the changes" nav pill: mirrors .cmd-btn metrics, existing tokens only */
 .chg-btn{
-  display:inline-flex;align-items:center;gap:8px;
-  height:40px;padding:0 14px;
+  display:inline-flex;align-items:center;justify-content:center;
+  width:40px;height:40px;padding:0;
   border:1px solid var(--border);border-radius:999px;
   background:var(--glass);color:var(--ink);
   font:600 .8rem var(--font);letter-spacing:-.01em;
@@ -627,11 +627,7 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
 .chg-ico::before,.chg-ico::after{content:"";position:absolute;background:currentColor;border-radius:1px}
 .chg-ico::before{left:4px;top:1px;width:10px;height:2px;box-shadow:0 5px 0 currentColor,0 10px 0 currentColor}
 .chg-ico::after{left:0;top:1px;width:2px;height:2px;box-shadow:0 5px 0 currentColor,0 10px 0 currentColor}
-@media (max-width:760px){
-  .chg-btn{width:40px;padding:0;justify-content:center;gap:0}
-  .chg-txt{display:none}
-  .nav-right{gap:8px}
-}
+@media (max-width:760px){.nav-right{gap:8px}}
 html[data-power="low"] .chg-btn{transition:none!important;transform:none!important}
 </style>
 <script>document.documentElement.classList.add('rx-on')</script>
@@ -779,7 +775,6 @@ html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58
          target="_blank" rel="noopener noreferrer"
          aria-label="See the changes (opens in a new tab)">
         <span class="chg-ico" aria-hidden="true"></span>
-        <span class="chg-txt">See the changes</span>
       </a>
       <button class="theme-toggle power-toggle" id="powerToggle" type="button" aria-label="Low power mode" aria-pressed="false" title="Low power mode">
         <span class="bat" aria-hidden="true"><i></i></span>
