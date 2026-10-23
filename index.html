@@ -579,6 +579,26 @@ nav .btn{height:40px}
 @media (prefers-reduced-motion:reduce){.spark .l{stroke-dashoffset:0}.spark .a,.spark circle{opacity:1}.step h3,.step p{opacity:1}}
 html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spark .a,html[data-power="low"] .spark circle{opacity:1}html[data-power="low"] .step h3,html[data-power="low"] .step p{opacity:1}
 @media (max-width:760px){.sec{padding:72px 0}.step{padding:16px 16px}.step .n{top:16px}.modal{padding:32px 24px 24px}}
+/* Support Email Styling */
+footer .support-link {
+  font-size: .82rem;
+  color: var(--ink-soft);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  transition: color .2s ease, border-color .2s ease;
+}
+footer .support-link:hover {
+  color: var(--wine);
+  border-color: var(--wine);
+}
+.faq details p a {
+  color: var(--wine);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.faq details p a:hover {
+  color: var(--wine-dark);
+}
 </style>
 <style id="motion">
 /* ===== Motion layer: WebGL logo halo + Stripe-style page choreography ===== */
@@ -897,6 +917,7 @@ html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58
     <details class="gl rx"><summary>Where is my data stored?<span class="mk" aria-hidden="true"></span></summary><p>Goals, study sessions and posts are stored in Supabase. Your theme and device mode stay in your browser.</p></details>
     <details class="gl rx"><summary>Can teachers and students share one space?<span class="mk" aria-hidden="true"></span></summary><p>Yes. The community feed is shared, and each post carries a Student or Teacher badge.</p></details>
     <details class="gl rx"><summary>What is the command palette?<span class="mk" aria-hidden="true"></span></summary><p>Press Ctrl+K (⌘K on Mac) to jump to a section, switch theme or device mode, or open the log-in window.</p></details>
+    <details class="gl rx"><summary>How do I get support?<span class="mk" aria-hidden="true"></span></summary><p>Email us at <a href="mailto:support.productivity.gmail.com@gmail.com">support.productivity.gmail.com@gmail.com</a> and we’ll get back to you.</p></details>
   </div>
 </div></section>
 
@@ -933,6 +954,7 @@ html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58
       <img id="logoFooter" alt="Prod99 logo">
       <span>Prod99</span>
     </a>
+    <a class="fine support-link" href="mailto:support.productivity.gmail.com@gmail.com">Support</a>
     <span class="fine">© 2026 Prod99</span>
     <span class="fine">Built for people who’d rather be studying.</span>
   </div>
@@ -1783,7 +1805,8 @@ items.push({t:"Open workspace",g:"App",f:function(){
 if(!out){items.push({t:"Log in",g:"Account",f:function(){$("openAuth").click()}});items.push({t:"Create an account",g:"Account",f:function(){$("heroSignup").click()}})}
 else items.push({t:"Log out",g:"Account",f:function(){$("logoutBtn").click()}});
 items.push({t:"Toggle theme",g:"Settings",f:function(){$("themeToggle").click()}});
-items.push({t:"Toggle device mode",g:"Settings",f:function(){$("powerToggle").click()}})}
+items.push({t:"Toggle device mode",g:"Settings",f:function(){$("powerToggle").click()}});
+items.push({t:"Email support",g:"Help",f:function(){window.location.href="mailto:support.productivity.gmail.com@gmail.com"}})}
 function mark(){$$("li",cl).forEach(function(li,i){li.setAttribute("aria-selected",i===sel)});var el=$("ck"+sel);if(el&&el.scrollIntoView)el.scrollIntoView({block:"nearest"});if(shown.length){ci.setAttribute("aria-activedescendant","ck"+sel);}else{ci.removeAttribute("aria-activedescendant");}}
 function render(){var q=ci.value.toLowerCase().trim();shown=items.filter(function(x){return!q||(x.t+" "+x.g).toLowerCase().indexOf(q)>-1});sel=Math.min(sel,Math.max(0,shown.length-1));cl.innerHTML="";
 shown.forEach(function(x,i){var li=d.createElement("li");li.id="ck"+i;li.setAttribute("role","option");li.setAttribute("aria-selected",i===sel);li.innerHTML="<span></span><small></small>";li.firstChild.textContent=x.t;li.lastChild.textContent=x.g;
