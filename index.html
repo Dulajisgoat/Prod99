@@ -925,7 +925,9 @@ html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58
 <form class="row" id="goalForm"><input id="goalIn" placeholder="e.g. Finish Algebra unit" maxlength="60"><button class="btn btn-solid">Add</button></form><ul id="goalList"></ul></div>
 <div class="card" id="trk"><h3>Study tracker</h3><div class="segrow"><div class="seg" role="group" aria-label="Timer mode"><button id="mdSw" type="button" aria-pressed="true">Stopwatch</button><button id="mdPo" type="button" aria-pressed="false">Pomodoro</button></div><div class="seg" id="duSeg" role="group" aria-label="Pomodoro length" hidden><button id="du25" type="button" aria-pressed="true">25</button><button id="du50" type="button" aria-pressed="false">50</button></div></div><div class="clock" id="clock">00:00</div>
 <div class="row"><button class="btn btn-solid" id="clkBtn" type="button">Start</button><span class="empty" id="today" style="align-self:center"></span></div><div class="bars" id="bars"></div></div>
-<div class="card wide"><h3>Community posts</h3>
+<div class="card"><h3>Files</h3><p class="empty">Up to 10 MB per file. Private to your account.</p><div class="row"><input type="file" id="fileIn" style="min-width:0;padding:8px 10px"><button class="btn btn-solid" id="fileUp" type="button">Upload</button></div><ul id="fileList"></ul></div>
+<div class="card"><h3>Backup</h3><p class="empty">Export or import your goals, study days and posts as JSON.</p><div class="row"><button class="btn btn-ghost" id="expBtn" type="button">Export</button><button class="btn btn-ghost" id="impBtn" type="button">Import</button><input type="file" id="impIn" accept="application/json,.json" hidden></div></div>
+<div class="card wide"><h3>Community posts <span class="badge" id="liveBadge" hidden>Live</span></h3>
 <form id="postForm"><input id="postIn" placeholder="Share a tip or lesson update..." maxlength="200"><select id="postRole"><option>Student</option><option>Teacher</option></select><button class="btn btn-solid">Post</button></form><ul id="feed"></ul></div>
 </div></div></section>
 
@@ -1498,9 +1500,73 @@ async function importJson(file){
   toast('Imported '+imp+', skipped '+skp+'.'+(Array.isArray(d.tasks)&&d.tasks.length?' Tasks are not imported yet.':''));
 }
 P99.exportAll=exportAll;P99.importJson=importJson;
-P99.reload=function(){loadGoals();loadLogs();loadPosts()};
+P99.reload=function(){loadGoals();loadLogs();loadPosts();loadFiles();subscribeLive()};
+
+/* ---------- File storage: private bucket "user-files", one folder per profile, 10 MB max ---------- */
+var BUCKET='user-files',MAX_FILE=10*1024*1024,fileBusy=false,live=null,liveTimer=null;
+function fileLabel(n){return n.replace(/^\d+-/,'')}
+function fmtSize(b){return b>=1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB'}
+async function loadFiles(){
+  var ul=$('fileList');
+  if(!pid()){ul.innerHTML='';return}
+  var r=await sb.storage.from(BUCKET).list(String(pid()),{limit:100,sortBy:{column:'created_at',order:'desc'}});
+  if(r.error){console.error(r.error);ul.innerHTML='<li class="empty">File storage is not available yet.</li>';return}
+  var f=(r.data||[]).filter(function(x){return x.id});
+  ul.innerHTML=f.map(function(x){
+    var sz=x.metadata&&x.metadata.size;
+    return '<li><div class="gt"><span>'+esc(fileLabel(x.name))+'</span><b>'+(sz?fmtSize(sz):'')+'</b><button data-a="get" data-n="'+attr(x.name)+'">Open</button><button data-a="rm" data-n="'+attr(x.name)+'" aria-label="Delete">&times;</button></div></li>';
+  }).join('')||'<li class="empty">No files yet.</li>';
+}
+$('fileUp').addEventListener('click',async function(){
+  if(!need()||fileBusy)return;
+  var f=$('fileIn').files[0];
+  if(!f){toast('Choose a file first.');return}
+  if(f.size>MAX_FILE){toast('That file is over 10 MB.');return}
+  var btn=this;fileBusy=true;btn.disabled=true;
+  var safe=f.name.replace(/[^\w.\-]+/g,'_').slice(-80);
+  var r=await sb.storage.from(BUCKET).upload(pid()+'/'+Date.now()+'-'+safe,f,{contentType:f.type||'application/octet-stream'});
+  fileBusy=false;btn.disabled=false;
+  if(bad(r))return;
+  $('fileIn').value='';toast('Uploaded '+f.name+'.');loadFiles();
+});
+$('fileList').addEventListener('click',async function(e){
+  var b=e.target.closest('button');if(!b||!need())return;
+  var p=pid()+'/'+b.dataset.n,r;
+  if(b.dataset.a==='get'){
+    var w=window.open('about:blank','_blank'); // opened before the await so popup blockers allow it
+    r=await sb.storage.from(BUCKET).createSignedUrl(p,60);
+    if(r.error){if(w)w.close();bad(r);return}
+    if(w){w.opener=null;w.location.href=r.data.signedUrl}
+    return;
+  }
+  if(!confirm('Delete this file?'))return;
+  b.disabled=true;
+  r=await sb.storage.from(BUCKET).remove([p]);
+  if(bad(r)){b.disabled=false;return}
+  loadFiles();
+});
+
+/* ---------- Real-time community feed (debounced) ---------- */
+function subscribeLive(){
+  if(live||!pid())return;
+  live=sb.channel('posts-live')
+    .on('postgres_changes',{event:'*',schema:'public',table:'posts'},function(){
+      clearTimeout(liveTimer);liveTimer=setTimeout(loadPosts,250);
+    })
+    .subscribe(function(s){var bd=$('liveBadge');if(bd)bd.hidden=(s!=='SUBSCRIBED')});
+}
+function unsubscribeLive(){
+  clearTimeout(liveTimer);
+  if(live){sb.removeChannel(live);live=null}
+  var bd=$('liveBadge');if(bd)bd.hidden=true;
+}
+
+/* ---------- Visible export / import buttons ---------- */
+$('expBtn').addEventListener('click',exportAll);
+$('impBtn').addEventListener('click',function(){$('impIn').click()});
+$('impIn').addEventListener('change',function(){var f=this.files[0];this.value='';if(f)importJson(f)});
 // Public stop so the outer scope can halt the timer on logout (see setProfile).
-P99.stop=function(){ stopTimer(false); };
+P99.stop=function(){ stopTimer(false); unsubscribeLive(); };
 P99.reload();
   }
 
