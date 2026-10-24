@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Prod99 is a global classroom where teachers share their craft and students join from anywhere in the world. Set goals, track every study session, and trade ideas in a community that keeps you moving.">
 <title>Prod99 — Study on your own clock</title>
-<link rel="icon" type="image/svg+xml" sizes="any" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="%237A0C1E"/><path d="M8 8h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H8z" fill="%23F7F1EF"/><path d="M24 8h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z" fill="%23F7F1EF" opacity=".85"/></svg>'>
-<link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="%237A0C1E"/><path d="M8 8h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H8z" fill="%23F7F1EF"/><path d="M24 8h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z" fill="%23F7F1EF" opacity=".85"/></svg>'>
-<link rel="apple-touch-icon" sizes="180x180" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="%237A0C1E"/><path d="M8 8h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H8z" fill="%23F7F1EF"/><path d="M24 8h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z" fill="%23F7F1EF" opacity=".85"/></svg>'>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1018,9 +1018,6 @@ html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58
 
   var LOGO_LIGHT = "___LOGO_LIGHT_PLACEHOLDER___";
   var LOGO_DARK  = "___LOGO_DARK_PLACEHOLDER___";
-  // Small favicon files (upload these to the root of your Cloudflare Pages project)
-  var FAVICON_LIGHT = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="%237A0C1E"/><path d="M8 8h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H8z" fill="%23F7F1EF"/><path d="M24 8h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z" fill="%23F7F1EF" opacity=".85"/></svg>';
-  var FAVICON_DARK  = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="%23D6435A"/><path d="M8 8h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H8z" fill="%23150909"/><path d="M24 8h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z" fill="%23150909" opacity=".85"/></svg>';
 
   var root = document.documentElement;
   var navLogo = document.getElementById('logoNav');
@@ -1030,19 +1027,12 @@ html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58
   var toggle = document.getElementById('themeToggle');
 
   function logoFor(theme){ return theme === 'dark' ? LOGO_DARK : LOGO_LIGHT; }
-  function faviconFor(theme){ return theme === 'dark' ? FAVICON_DARK : FAVICON_LIGHT; }
 
   function applyLogos(theme){
     var src = logoFor(theme);
     navLogo.src = src;
     heroLogo.src = src;
     footerLogo.src = src;
-    // Also swap the favicon so the browser tab matches the theme.
-    try{
-      var fav = faviconFor(theme);
-      var link = document.querySelector('link[rel="icon"][type="image/svg+xml"]') || document.querySelector('link[rel="icon"]');
-      if(link){ link.setAttribute('href', fav); }
-    }catch(e){}
   }
 
   function getStoredTheme(){
@@ -1470,13 +1460,50 @@ $('mdPo').addEventListener('click',function(){ tMode='pomodoro'; syncSegs(); tic
 document.addEventListener('visibilitychange',function(){ if(!document.hidden && tm){ if(tMode==='pomodoro'){ pomoTick(); } else { tickClock(); } } });
 syncSegs();
 /* posts */
-async function loadPosts(){var r=await sb.from('posts').select('*').order('created_at',{ascending:false});if(r.error)console.error(r.error);else posts=r.data||[];drawFeed()}
-var likedPosts=[];
-try{var lpRaw=JSON.parse(localStorage.getItem('prod99_likes')||'[]');if(Array.isArray(lpRaw))likedPosts=lpRaw}catch(e){}
-function saveLikes(){try{localStorage.setItem('prod99_likes',JSON.stringify(likedPosts))}catch(e){}}
-function drawFeed(){$('feed').innerHTML=posts.map(function(p){var on=likedPosts.indexOf(p.id)>-1;return '<li class="post"><small><b>'+esc(p.name)+'</b><span class="badge">'+esc(p.role)+'</span></small><p>'+esc(p.content)+'</p><button class="like'+(on?' liked':'')+'" data-id="'+attr(p.id)+'" aria-pressed="'+(on?'true':'false')+'"'+(on?' style="color:var(--wine);box-shadow:inset 0 0 0 1.5px var(--wine)"':'')+(likeInFlight[p.id]?' disabled':'')+'>'+(on?'&#9829;':'&#9825;')+' '+num(p.likes)+'</button></li>'}).join('')||'<li class="empty">No posts yet. Start the conversation.</li>'}
-$('postForm').addEventListener('submit',async function(e){e.preventDefault();var v=$('postIn').value.trim();if(!v)return;if(!need())return;var r=await sb.from('posts').insert({profile_id:pid(),name:P99.profile.username||'Guest',role:$('postRole').value,content:v,likes:0});if(bad(r))return;$('postIn').value='';loadPosts()});
-$('feed').addEventListener('click',async function(e){var b=e.target.closest('.like');if(!b)return;if(!need())return;
+var likedPosts=[],likesPidLoaded=null,postsLoadState='ok',postBusy=false;
+// likedPosts is scoped to the signed-in profile so a logout/login on the same
+// device never hands the next account the previous account's liked state.
+function likesKey(p){return 'prod99_likes_'+p}
+function ensureLikesLoaded(){
+  var p=pid();
+  if(p===likesPidLoaded)return;
+  likesPidLoaded=p;
+  if(!p){likedPosts=[];return}
+  try{var raw=JSON.parse(localStorage.getItem(likesKey(p))||'[]');likedPosts=Array.isArray(raw)?raw:[]}catch(e){likedPosts=[]}
+}
+function saveLikes(){var p=pid();if(!p)return;try{localStorage.setItem(likesKey(p),JSON.stringify(likedPosts))}catch(e){}}
+async function loadPosts(){
+  ensureLikesLoaded();
+  var r=await sb.from('posts').select('*').order('created_at',{ascending:false});
+  if(r.error){ console.error(r.error); postsLoadState='error'; }
+  else { posts=r.data||[]; postsLoadState='ok'; }
+  drawFeed();
+}
+function drawFeed(){
+  if(postsLoadState==='error'){ $('feed').innerHTML='<li class="empty">Couldn\'t load posts. <button data-a="retry">Retry</button></li>'; return; }
+  $('feed').innerHTML=posts.map(function(p){var on=likedPosts.indexOf(p.id)>-1;return '<li class="post"><small><b>'+esc(p.name)+'</b><span class="badge">'+esc(p.role)+'</span></small><p>'+esc(p.content)+'</p><button class="like'+(on?' liked':'')+'" data-id="'+attr(p.id)+'" aria-pressed="'+(on?'true':'false')+'"'+(on?' style="color:var(--wine);box-shadow:inset 0 0 0 1.5px var(--wine)"':'')+(likeInFlight[p.id]?' disabled':'')+'>'+(on?'&#9829;':'&#9825;')+' '+num(p.likes)+'</button></li>'}).join('')||'<li class="empty">No posts yet. Start the conversation.</li>';
+}
+$('postForm').addEventListener('submit',async function(e){
+  e.preventDefault();
+  if(postBusy)return;
+  var v=$('postIn').value.trim();
+  if(!v)return;
+  if(!need())return;
+  var btn=$('postForm').querySelector('button');
+  postBusy=true; if(btn)btn.disabled=true;
+  $('postIn').value='';
+  try{
+    var r=await sb.from('posts').insert({profile_id:pid(),name:P99.profile.username||'Guest',role:$('postRole').value,content:v,likes:0});
+    if(bad(r)){ $('postIn').value=v; return; }
+    loadPosts();
+  } finally {
+    postBusy=false; if(btn)btn.disabled=false;
+  }
+});
+$('feed').addEventListener('click',async function(e){
+  var retryBtn=e.target.closest('[data-a="retry"]');
+  if(retryBtn){ loadPosts(); return; }
+  var b=e.target.closest('.like');if(!b)return;if(!need())return;
   var id=b.dataset.id;
   if(likeInFlight[id]){ return; }  // debounce rapid double-clicks
   var wasLiked=likedPosts.indexOf(id)>-1,delta=wasLiked?-1:1;
@@ -1488,14 +1515,23 @@ $('feed').addEventListener('click',async function(e){var b=e.target.closest('.li
   var p=posts.filter(function(x){return x.id===id;})[0];
   if(p){ p.likes=Math.max(0,(p.likes||0)+delta); }
   drawFeed();
-  var r=await sb.rpc('increment_like',{post_id:id,delta:delta});
-  likeInFlight[id]=false;
-  if(r.error){
-    // Revert the optimistic toggle if the server rejected it.
+  try{
+    var r=await sb.rpc('increment_like',{post_id:id,delta:delta});
+    if(r.error&&(r.error.code==='PGRST202'||r.error.code==='42883')&&p){
+      // RPC not deployed yet: fall back to the old update so likes keep working. Remove once the RPC exists.
+      console.warn('increment_like missing; using direct update');
+      r=await sb.from('posts').update({likes:p.likes}).eq('id',id);
+    }
+    if(r.error){ throw r.error; }
+  }catch(err){
+    // Revert the optimistic toggle (liked state and local count) if the server rejected it.
     if(wasLiked){ if(likedPosts.indexOf(id)<0){ likedPosts.push(id); } }
     else { likedPosts=likedPosts.filter(function(x){return x!==id;}); }
+    if(p){ p.likes=Math.max(0,(p.likes||0)-delta); }
     saveLikes();
-    bad(r);
+    bad({error:err});
+  } finally {
+    likeInFlight[id]=false;
   }
   loadPosts();   // re-sync with server truth
 });
