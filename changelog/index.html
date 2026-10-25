@@ -18,8 +18,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script>
+/* Independent storage keys for the standalone changelog */
 (function(){var r=document.documentElement,n=navigator,t,p;
-try{t=localStorage.getItem('prod99_theme');p=localStorage.getItem('prod99_power')}catch(e){}
+try{t=localStorage.getItem('changelog_theme');p=localStorage.getItem('changelog_power')}catch(e){}
 if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
 if(!p)p=((n.deviceMemory&&n.deviceMemory<=2)||(n.hardwareConcurrency&&n.hardwareConcurrency<=2)||matchMedia('(prefers-reduced-motion: reduce)').matches)?'low':'off';
 r.setAttribute('data-theme',t);if(p==='low')r.setAttribute('data-power','low');r.classList.add('js')})();
@@ -155,7 +156,7 @@ html[data-theme="dark"][data-power="low"] .ico::before{transform:scale(1.5)}
   <div class="wrap">
     <div class="brand"><img id="logoNav" src="/logo-light.png" alt="Prod99 logo" style="height:34px;width:34px;margin-right:4px;">Prod99 Planner</div>
     <div class="nav-right">
-      <a href="YOUR_PLANNER_URL" class="tbtn power-toggle" style="padding:0 16px;">Back to App</a>
+      <a href="/" class="tbtn" style="padding: 0 16px; font-size: 0.85rem; font-weight: 600;">&larr; Back to App</a>
       <button class="tbtn power-toggle" id="powerToggle" type="button" aria-pressed="false" title="Switch between high-end and low-end device mode"><span class="bat" aria-hidden="true"><i></i></span><span id="pLabel">High-end</span></button>
       <button class="tbtn" id="themeToggle" type="button" aria-label="Switch between light and dark mode"><span class="ico" aria-hidden="true"></span></button>
     </div>
@@ -212,7 +213,7 @@ tb.addEventListener('click',function(){
   var n=r.getAttribute('data-theme')==='dark'?'light':'dark';
   r.classList.add('theme-anim');r.setAttribute('data-theme',n);
   applyLogos(n);
-  try{localStorage.setItem('prod99_theme',n)}catch(e){}
+  try{localStorage.setItem('changelog_theme',n)}catch(e){}
   clearTimeout(tm);tm=setTimeout(function(){r.classList.remove('theme-anim')},700);
 });
 function power(on){
@@ -225,7 +226,7 @@ power(r.getAttribute('data-power')==='low');
 applyLogos(r.getAttribute('data-theme'));
 pb.addEventListener('click',function(){
   var on=r.getAttribute('data-power')!=='low';power(on);
-  try{localStorage.setItem('prod99_power',on?'low':'off')}catch(e){}
+  try{localStorage.setItem('changelog_power',on?'low':'off')}catch(e){}
 });
 
 var els=document.querySelectorAll('.rv');
