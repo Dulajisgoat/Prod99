@@ -183,13 +183,13 @@
     var s = await sb.auth.getSession();
     if(!s.data.session) {
       // KICK THEM OUT TO LOGIN
-      location.replace('/auth/donut-login.html');
+      location.replace('/login/'); // UPDATED TO NEW LOGIN PATH
       return;
     }
     var r = await sb.from('profiles').select('id,username').eq('auth_id', s.data.session.user.id).maybeSingle();
     if(!r.data) {
       await sb.auth.signOut({ scope: 'local' });
-      location.replace('/auth/donut-login.html');
+      location.replace('/login/'); // UPDATED TO NEW LOGIN PATH
       return;
     }
     
@@ -209,7 +209,7 @@
 
   checkAuth();
 
-  // --- 3. WORKSPACE LOGIC (Copied from your index.html) ---
+  // --- 3. WORKSPACE LOGIC ---
   function initWorkspace(){
     var $=function(i){return document.getElementById(i)};
     function esc(t){var d=document.createElement("div");d.textContent=t;return d.innerHTML}
