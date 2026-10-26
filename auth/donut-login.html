@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" class="boot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Log in · Prod99</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/favicon.png">
+<!-- Inline blocking script: sets theme/power before first paint, no flash. New code, not an edit to any existing function. -->
+<script>
+(function(){
+  try{
+    var t = localStorage.getItem('prod99_theme');
+    if(!t){ t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'; }
+    document.documentElement.setAttribute('data-theme', t);
+    if(localStorage.getItem('prod99_power') === 'low'){ document.documentElement.setAttribute('data-power', 'low'); }
+  }catch(e){}
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7F1EF; --surface:#FFFFFF; --ink:#1C1412; --ink-soft:#6B5955;
+    --wine:#7A0C1E; --wine-dark:#4A0812; --wine-soft:rgba(122,12,30,.08);
+    --border:rgba(28,20,18,.14); --field:rgba(255,255,255,.62);
+    --radius:3px;
+  }
+  html[data-theme="dark"]{
+    --bg:#150909; --surface:#1E1010; --ink:#F3EAE8; --ink-soft:#BFA6A2;
+    --wine:#D6435A; --wine-dark:#8C1C2B; --wine-soft:rgba(214,67,90,.14);
+    --border:rgba(243,234,232,.16); --field:rgba(255,255,255,.06);
+  }
+  html.boot, html.boot *{ transition:none!important; }
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0; min-height:100%; display:flex; align-items:center; justify-content:center;
+    background:var(--bg); color:var(--ink); padding:96px 20px 40px;
+    font-family:"Inter Tight",system-ui,-apple-system,sans-serif;
+    transition:background-color .3s ease, color .3s ease;
+  }
+
+  /* ---------- top bar: back link + toggles ---------- */
+  .topbar{
+    position:fixed; top:20px; left:20px; right:20px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px; z-index:2;
+  }
+  .btn-ghost{
+    display:inline-flex; align-items:center; gap:8px; height:40px; padding:0 18px;
+    border-radius:999px; border:1px solid var(--border); background:transparent;
+    color:var(--ink); text-decoration:none; font-weight:600; font-size:.88rem;
+    letter-spacing:-.01em; cursor:pointer; transition:border-color .2s, color .2s;
+  }
+  .btn-ghost:hover{ border-color:var(--wine); color:var(--wine); }
+  .btn-ghost img{ width:18px; height:18px; display:block; }
+  .toggles{ display:flex; gap:10px; }
+
+  /* ---------- theme/power toggle buttons: .ico / .bat copied verbatim from donut99.html ---------- */
+  .theme-toggle{
+    position:relative; width:40px; height:40px; display:flex; align-items:center; justify-content:center;
+    border-radius:999px; border:1px solid var(--border); background:transparent; color:var(--ink);
+    cursor:pointer; transition:border-color .2s, color .2s, transform .3s;
+  }
+  .theme-toggle:hover{ border-color:var(--wine); color:var(--wine); }
+  .theme-toggle:active{ transform:scale(.92); }
+  .theme-toggle .ico{position:relative;display:block;width:18px;height:18px;border-radius:50%;background:transparent;box-shadow:inset -6px -3px 0 0 currentColor;
+    transition:transform .6s cubic-bezier(.5,1.5,.4,1),box-shadow .5s cubic-bezier(.4,0,.2,1),background-color .5s}
+  .theme-toggle .ico::before{content:"";position:absolute;inset:-5px;border:0;border-radius:50%;opacity:0;transform:scale(.4) rotate(0);
+    background:repeating-conic-gradient(from -4deg,currentColor 0 8deg,transparent 8deg 45deg);
+    -webkit-mask:radial-gradient(circle,transparent 58%,#000 60%);mask:radial-gradient(circle,transparent 58%,#000 60%);
+    transition:opacity .45s ease,transform .7s cubic-bezier(.5,1.4,.4,1)}
+  .theme-toggle .ico::after{display:none}
+  html[data-theme="dark"] .theme-toggle .ico{background:currentColor;box-shadow:none;transform:scale(.58)}
+  html[data-theme="dark"] .theme-toggle .ico::before{opacity:1;transform:scale(1.5) rotate(90deg)}
+  .theme-toggle:hover .ico::before{transform:scale(1.5) rotate(135deg)}
+  html[data-theme="light"] .theme-toggle:hover .ico{transform:rotate(-20deg)}
+
+  .bat{position:relative;box-sizing:content-box;width:18px;height:9px;border:2px solid currentColor;border-radius:3px}
+  .bat::before{content:none!important;display:none}
+  .bat::after{content:"";position:absolute;right:-5px;top:50%;width:2px;height:4px;margin-top:-2px;background:currentColor;border-radius:0 2px 2px 0}
+  .bat i{position:absolute;left:1px;top:1px;bottom:1px;right:1px;border-radius:1px;overflow:hidden;background:currentColor;
+    transform-origin:left center;transform:scaleX(1);transition:transform .7s cubic-bezier(.65,0,.25,1),background-color .5s ease}
+  .bat i::after{content:"";position:absolute;inset:0;width:60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:translateX(-120%);animation:batSheen 2.8s ease-in-out infinite}
+  @keyframes batSheen{0%,35%{transform:translateX(-120%)}80%,100%{transform:translateX(220%)}}
+  .power-toggle{transition:color .5s ease,border-color .5s ease,transform .3s ease}
+  html[data-power="low"] .power-toggle{color:var(--wine);border-color:var(--wine)}
+  html[data-power="low"] .bat i{transform:scaleX(.32);transition-duration:.7s!important}
+  html[data-power="low"] .bat i::after{display:none}
+
+  /* ---------- card ---------- */
+  .card{
+    width:100%; max-width:420px; background:var(--surface); border:1px solid var(--border);
+    border-radius:16px; padding:40px 36px 28px;
+    box-shadow:0 32px 64px -24px rgba(50,20,30,.4), 0 16px 32px -16px rgba(0,0,0,.25);
+    transition:background-color .3s ease, border-color .3s ease;
+  }
+  .wordmark{
+    display:block; margin-bottom:28px;
+  }
+  .wordmark img{
+    display:block; height:32px; width:auto; object-fit:contain;
+  }
+  /* Default: light mode shows light logo */
+  .wordmark .logo-dark{ display:none; }
+  /* Dark mode: hide light logo, show dark logo */
+  html[data-theme="dark"] .wordmark .logo-light{ display:none; }
+  html[data-theme="dark"] .wordmark .logo-dark{ display:block; }
+  .card h1{ font-size:1.75rem; font-weight:600; letter-spacing:-.04em; line-height:1.1; margin:0 0 8px; }
+  .auth-hint{ margin:0 0 28px; color:var(--ink-soft); font-size:.92rem; }
+
+  #authForm{ display:flex; flex-direction:column; gap:18px; }
+  #authForm label{ display:block; font-weight:600; font-size:.84rem; color:var(--ink); margin-bottom:8px; }
+  #authForm input{
+    width:100%; height:44px; border-radius:12px; background:var(--field); border:1px solid var(--border);
+    color:var(--ink); padding:0 14px; font:inherit; transition:border-color .2s, box-shadow .2s;
+  }
+  #authForm input:focus{ outline:none; border-color:var(--wine); box-shadow:0 0 0 4px var(--wine-soft); }
+  .fld-confirm{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .3s ease; }
+  .fld-confirm .fld-inner{ overflow:hidden; }
+  #authForm.is-signup .fld-confirm{ grid-template-rows:1fr; }
+  .field-msg{ font-size:.78rem; color:var(--wine); min-height:16px; margin:-6px 0 0; }
+
+  .btn-solid{
+    position:relative; width:100%; height:46px; border:none; border-radius:8px; background:var(--wine);
+    color:#fff; font:inherit; font-weight:600; font-size:.95rem; cursor:pointer; box-shadow:none;
+    transition:background-color .2s;
+  }
+  .btn-solid:hover{ background:var(--wine-dark); }
+  .btn-solid:disabled{ color:transparent; cursor:default; opacity:1; }
+  .btn-solid:disabled::after{
+    content:""; display:block; position:absolute; left:50%; top:50%; width:18px; height:18px; margin:-9px 0 0 -9px;
+    border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; background:none; animation:spin .7s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .auth-switch{ text-align:center; margin-top:24px; padding-top:20px; border-top:1px solid var(--border); font-size:.88rem; color:var(--ink-soft); }
+  .auth-switch button{ background:none; border:none; color:var(--wine); font-weight:600; font-size:.88rem; cursor:pointer; padding:0; }
+
+  :focus-visible{ outline:2px solid var(--wine); outline-offset:2px; }
+
+  /* ---------- low-end device mode: no blur, no animation, solid surfaces ---------- */
+  html[data-power="low"] .card{ box-shadow:none; }
+  html[data-power="low"] *, html[data-power="low"] *::before, html[data-power="low"] *::after{
+    transition-duration:.01s!important; animation-duration:.01s!important;
+    backdrop-filter:none!important; -webkit-backdrop-filter:none!important;
+  }
+
+  @media(max-width:480px){
+    body{ display:block; padding:88px 16px 24px; }
+    .topbar{ position:fixed; }
+    .card{ max-width:none; padding:32px 24px 24px; margin:0 auto; }
+  }
+</style>
+<style id="visuals">
+/* ====================================================================
+   Visual layers re-added from donut99.html: aurora / wireframe octahedron /
+   3D geometry field / no-gl & reduced-motion fallback gradient.
+   This block is new and isolated — it does not touch the form, buttons,
+   inputs, topbar, or card layout rules above (apart from the two
+   position/z-index lines at the very end, which are additive).
+   ==================================================================== */
+
+/* ---- Animatable theme colours: ease over 0.6s when data-theme changes ---- */
+@property --bg{syntax:'<color>';inherits:true;initial-value:#F7F1EF}
+@property --surface{syntax:'<color>';inherits:true;initial-value:#FFFFFF}
+@property --ink{syntax:'<color>';inherits:true;initial-value:#1C1412}
+@property --ink-soft{syntax:'<color>';inherits:true;initial-value:#6B5955}
+@property --wine{syntax:'<color>';inherits:true;initial-value:#7A0C1E}
+@property --wine-dark{syntax:'<color>';inherits:true;initial-value:#4A0812}
+@property --wine-soft{syntax:'<color>';inherits:true;initial-value:rgba(122,12,30,0.08)}
+@property --border{syntax:'<color>';inherits:true;initial-value:rgba(28,20,18,0.14)}
+@property --field{syntax:'<color>';inherits:true;initial-value:rgba(255,255,255,.62)}
+html{
+  transition-property:--bg,--surface,--ink,--ink-soft,--wine,--wine-dark,--wine-soft,--border,--field;
+  transition-duration:.6s;
+  transition-timing-function:cubic-bezier(.4,0,.2,1);
+}
+html.boot{transition:none!important}
+
+/* ---- Aurora / wireframe canvases ---- */
+#aurora,#shapes{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+#shapes{transform-origin:50% 50%}
+
+/* ---- Fallback gradient: shown for no-gl, low-power, or reduced-motion ---- */
+body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;display:none;background:radial-gradient(60% 50% at 12% 0%,rgba(122,12,30,.2),transparent 70%),radial-gradient(50% 45% at 92% 45%,rgba(212,154,106,.2),transparent 70%),radial-gradient(55% 50% at 40% 105%,rgba(74,8,18,.2),transparent 70%)}
+html[data-theme="dark"] body::before{opacity:.85}
+html.no-gl body::before,html[data-power="low"] body::before{display:block}
+html[data-power="low"] #aurora,html[data-power="low"] #shapes{display:none}
+@media(prefers-reduced-motion:reduce){#aurora,#shapes{display:none}body::before{display:block}}
+
+/* ===== 3D geometry: real CSS 3D solids (cubes, pyramids, wire spheres) =====
+   Outer <b> slides sideways + turns with page scroll; inner solid spins on its own.
+   Edge/face colours derive from --wine so both themes stay on-palette and ease with the theme change. */
+:root{--sp:0}
+.geo{--edge:color-mix(in srgb,var(--wine) 52%,transparent);--edge2:color-mix(in srgb,var(--wine) 30%,transparent)}
+html[data-theme="dark"] .geo{--edge:color-mix(in srgb,var(--wine) 70%,transparent);--edge2:color-mix(in srgb,var(--wine) 42%,transparent)}
+.geo{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;perspective:900px;perspective-origin:50% 38%}
+.geo b{position:absolute;left:var(--x);top:var(--y);width:0;height:0;transform-style:preserve-3d;will-change:transform}
+.geo i{position:absolute;display:block;width:var(--s);height:var(--s);left:calc(var(--s)/-2);top:calc(var(--s)/-2);transform-style:preserve-3d;
+  transform:rotateX(-24deg) rotateY(32deg);animation:spin3d var(--t,22s) linear infinite var(--dir,normal);animation-delay:var(--dl,0s)}
+.geo u{position:absolute;display:block;backface-visibility:visible;transition:border-color .6s cubic-bezier(.4,0,.2,1),background-color .6s cubic-bezier(.4,0,.2,1)}
+html.boot .geo u{transition:none}
+@keyframes spin3d{from{transform:rotateX(-24deg) rotateY(0)}to{transform:rotateX(-24deg) rotateY(360deg)}}
+/* cube */
+.cube u{inset:0;border:1.5px solid var(--edge);background:color-mix(in srgb,var(--wine) var(--a,9%),transparent)}
+.cube u:nth-child(1){transform:translateZ(calc(var(--s)/2));--a:13%}
+.cube u:nth-child(2){transform:rotateY(180deg) translateZ(calc(var(--s)/2));--a:5%}
+.cube u:nth-child(3){transform:rotateY(90deg) translateZ(calc(var(--s)/2));--a:9%}
+.cube u:nth-child(4){transform:rotateY(-90deg) translateZ(calc(var(--s)/2));--a:7%}
+.cube u:nth-child(5){transform:rotateX(90deg) translateZ(calc(var(--s)/2));--a:16%}
+.cube u:nth-child(6){transform:rotateX(-90deg) translateZ(calc(var(--s)/2));--a:4%}
+/* square pyramid (height .9 x base, slant face tilted 29deg) */
+.pyr{--L:calc(var(--s)*1.03)}
+.pyr u{left:0;width:var(--s);top:calc(var(--s)/2 - var(--L));height:var(--L);transform-origin:50% 100%;
+  background:color-mix(in srgb,var(--wine) var(--a,10%),transparent);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.pyr u::after{content:"";position:absolute;inset:0;background:var(--edge);
+  clip-path:polygon(evenodd,50% 0,100% 100%,0 100%,50% 0,50% 5%,5% 96%,95% 96%,50% 5%)}
+.pyr u:nth-child(2){transform:translateZ(calc(var(--s)/2)) rotateX(29deg);--a:15%}
+.pyr u:nth-child(3){transform:rotateY(90deg) translateZ(calc(var(--s)/2)) rotateX(29deg);--a:8%}
+.pyr u:nth-child(4){transform:rotateY(180deg) translateZ(calc(var(--s)/2)) rotateX(29deg);--a:5%}
+.pyr u:nth-child(5){transform:rotateY(270deg) translateZ(calc(var(--s)/2)) rotateX(29deg);--a:11%}
+.pyr u.bs{top:0;height:var(--s);transform:rotateX(90deg);transform-origin:50% 50%;clip-path:none;border:1.5px solid var(--edge);background:color-mix(in srgb,var(--wine) 4%,transparent)}
+.pyr u.bs::after{display:none}
+.pyr{margin-top:calc(var(--s)*.18)}
+/* wire sphere: four great circles */
+.sph u{inset:0;border:1.5px solid var(--edge2);border-radius:50%}
+.sph u:nth-child(2){transform:rotateY(45deg)}.sph u:nth-child(3){transform:rotateY(90deg)}.sph u:nth-child(4){transform:rotateY(135deg)}
+.sph::after{content:"";position:absolute;inset:0;border-radius:50%;border:1.5px solid var(--edge);transform:rotateX(90deg)}
+/* placement: sizes in px, travel sideways in vw */
+.g1{--x:14%;--y:20%;--s:70px;--dx:62;--dy:40;--r:140;--t:26s}
+.g2{--x:84%;--y:28%;--s:110px;--dx:-66;--dy:90;--r:-120;--t:30s;--dir:reverse;--dl:-6s}
+.g3{--x:72%;--y:80%;--s:120px;--dx:-58;--dy:-70;--r:180;--t:34s}
+.g4{--x:20%;--y:74%;--s:96px;--dx:64;--dy:-60;--r:-160;--t:24s;--dir:reverse;--dl:-3s}
+.g5{--x:50%;--y:14%;--s:60px;--dx:-50;--dy:120;--r:200;--t:20s;--dl:-9s}
+.g6{--x:92%;--y:62%;--s:44px;--dx:-72;--dy:-90;--r:240;--t:18s;--dl:-5s}
+.g7{--x:8%;--y:46%;--s:140px;--dx:58;--dy:60;--r:100;--t:38s;--dir:reverse}
+/* slide sideways on scroll: pure CSS scroll timeline, GPU transform only */
+@supports (animation-timeline:scroll()){
+  @keyframes geoSlide{from{transform:translate3d(0,0,0) rotateY(0) rotateX(0)}to{transform:translate3d(calc(var(--dx)*1vw),calc(var(--dy)*1px),0) rotateY(calc(var(--r)*1deg)) rotateX(calc(var(--r)*.3deg))}}
+  .geo b{animation:geoSlide linear both;animation-timeline:scroll(root block)}
+}
+/* fallback via --sp */
+html.geo-js .geo b{transform:translate3d(calc(var(--dx)*var(--sp)*1vw),calc(var(--dy)*var(--sp)*1px),0) rotateY(calc(var(--r)*var(--sp)*1deg));animation:none}
+html.geo-js .geo i{animation:spin3d var(--t,22s) linear infinite var(--dir,normal)}
+/* Low-end: same seven solids as high-end, but static (still 3D, no motion, no transitions) */
+html[data-power="low"] .geo b,html[data-power="low"] .geo i{animation:none!important;will-change:auto}
+html[data-power="low"] .geo b{transform:none!important}
+html[data-power="low"] .geo u{transition:none!important}
+@media(prefers-reduced-motion:reduce){.geo b,.geo i{animation:none!important;transform:none}.geo i{transform:rotateX(-24deg) rotateY(32deg)}}
+@media(max-width:760px){.g7,.g6{display:none}.g1{--s:52px}.g2{--s:80px}.g3{--s:84px}.g4{--s:70px}}
+
+/* ---- Card-surface uplift: the aurora/geometry sit at z-index:-1 on the body,
+   so a normal stacking element already paints above them. These two lines are
+   the only touch on .card/.topbar, added because the brief asked for them
+   explicitly — .topbar already has position:fixed, so only its z-index is set
+   here to avoid overriding that. ---- */
+.card{position:relative;z-index:1}
+.topbar{z-index:2}
+</style>
+</head>
+<body>
+<canvas id="aurora" aria-hidden="true"></canvas>
+<canvas id="shapes" aria-hidden="true"></canvas>
+<div class="geo" aria-hidden="true">
+  <b class="g1"><i class="cube"><u></u><u></u><u></u><u></u><u></u><u></u></i></b>
+  <b class="g2"><i class="pyr"><u class="bs"></u><u></u><u></u><u></u><u></u></i></b>
+  <b class="g3"><i class="sph"><u></u><u></u><u></u><u></u></i></b>
+  <b class="g4"><i class="cube"><u></u><u></u><u></u><u></u><u></u><u></u></i></b>
+  <b class="g5"><i class="pyr"><u class="bs"></u><u></u><u></u><u></u><u></u></i></b>
+  <b class="g6"><i class="cube"><u></u><u></u><u></u><u></u><u></u><u></u></i></b>
+  <b class="g7"><i class="sph"><u></u><u></u><u></u><u></u></i></b>
+</div>
+
+<div class="topbar">
+  <a class="btn-ghost" href="/"><img id="navLogo" src="/logo-light.png" alt="" aria-hidden="true">← Back to Prod99</a>
+  <div class="toggles">
+    <button class="theme-toggle power-toggle" id="powerToggle" type="button" aria-label="Low power mode" aria-pressed="false" title="Low power mode">
+      <span class="bat" aria-hidden="true"><i></i></span>
+    </button>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch between light and dark mode">
+      <span class="ico" aria-hidden="true"></span>
+    </button>
+  </div>
+</div>
+
+<div id="heroLogoWrap" hidden><img id="heroLogo" src="/logo-light.png" alt="" aria-hidden="true"></div>
+<img id="footerLogo" src="/logo-light.png" alt="" aria-hidden="true" hidden>
+
+<main class="card">
+  <span class="wordmark">
+    <img src="/logo-light.png" alt="Prod99" class="logo-light">
+    <img src="/logo-dark.png" alt="Prod99" class="logo-dark">
+  </span>
+  <h1 id="authTitle">Create an account</h1>
+  <p class="auth-hint" id="authHint">Pick a username and a password. No email needed.</p>
+
+  <form id="authForm" class="is-signup" novalidate>
+    <div>
+      <label for="auName">Username</label>
+      <input type="text" id="auName" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus required>
+    </div>
+    <div>
+      <label for="auPass">Password</label>
+      <input type="password" id="auPass" autocomplete="new-password" required>
+    </div>
+    <div class="fld-confirm">
+      <div class="fld-inner">
+        <label for="auConfirm">Confirm password</label>
+        <input type="password" id="auConfirm" autocomplete="new-password">
+      </div>
+    </div>
+    <div class="field-msg" id="authMsg" role="alert"></div>
+    <button type="submit" class="btn-solid" id="authSubmit">Create account</button>
+  </form>
+
+  <p class="auth-switch"><span id="authSwitchText">Already have an account?</span> <button type="button" id="authSwitch">Log in</button></p>
+</main>
+
+<div id="authCore" hidden aria-hidden="true">
+    <form class="form-panel active" id="panelSignup" novalidate>
+      <div>
+        <label for="suName">Username</label>
+        <input type="text" id="suName" required autocomplete="username">
+      </div>
+      <div>
+        <label for="suPassword">Password</label>
+        <input type="password" id="suPassword" required minlength="6" autocomplete="new-password">
+      </div>
+      <div>
+        <label for="suConfirm">Confirm password</label>
+        <input type="password" id="suConfirm" required minlength="6" autocomplete="new-password">
+      </div>
+      <div class="field-msg" id="suMsg"></div>
+      <button type="submit" class="btn btn-solid">Create account</button>
+    </form>
+
+    <form class="form-panel" id="panelLogin" novalidate>
+      <div>
+        <label for="liEmail">Username</label>
+        <input type="text" id="liEmail" required autocomplete="username">
+      </div>
+      <div>
+        <label for="liPassword">Password</label>
+        <input type="password" id="liPassword" required autocomplete="current-password">
+      </div>
+      <div class="field-msg" id="liMsg"></div>
+      <button type="submit" class="btn btn-solid">Log in</button>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var root = document.documentElement;
+
+  /* ================================================================
+   * ---------- Theme toggle ----------
+   * ================================================================ */
+  var LOGO_LIGHT = "/logo-light.png";
+  var LOGO_DARK = "/logo-dark.png";
+
+  var navLogo = document.getElementById('logoNav') || document.getElementById('navLogo');
+  var heroLogo = document.getElementById('heroLogo');
+  var footerLogo = document.getElementById('footerLogo');
+  var heroWrap = document.getElementById('heroLogoWrap');
+  var toggle = document.getElementById('themeToggle');
+
+  function logoFor(theme){ return theme === 'dark' ? LOGO_DARK : LOGO_LIGHT; }
+
+  function applyLogos(theme){
+    var src = logoFor(theme);
+    navLogo.src = src;
+    heroLogo.src = src;
+    footerLogo.src = src;
+  }
+
+  function getStoredTheme(){
+    try{ return localStorage.getItem('prod99_theme'); }catch(e){ return null; }
+  }
+  function storeTheme(t){
+    try{ localStorage.setItem('prod99_theme', t); }catch(e){}
+  }
+
+  var initial = getStoredTheme() ||
+    (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  root.setAttribute('data-theme', initial);
+  applyLogos(initial);
+
+  if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').addEventListener){
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e){
+      if(getStoredTheme()){ return; }
+      var next = e.matches ? 'dark' : 'light';
+      root.classList.add('theme-anim', 'logo-swap');
+      heroWrap.classList.add('swap');
+      root.setAttribute('data-theme', next);
+      clearTimeout(logoTimer);
+      logoTimer = setTimeout(function(){
+        applyLogos(next);
+        setTimeout(function(){
+          root.classList.remove('logo-swap');
+          heroWrap.classList.remove('swap');
+        }, 30);
+      }, 240);
+      clearTimeout(animTimer);
+      animTimer = setTimeout(function(){ root.classList.remove('theme-anim'); }, 700);
+    });
+  }
+
+  var logoTimer = null, animTimer = null;
+  toggle.addEventListener('click', function(){
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.classList.add('theme-anim', 'logo-swap');
+    heroWrap.classList.add('swap');
+    root.setAttribute('data-theme', next);
+    storeTheme(next);
+
+    clearTimeout(logoTimer);
+    logoTimer = setTimeout(function(){
+      applyLogos(next);
+      setTimeout(function(){
+        root.classList.remove('logo-swap');
+        heroWrap.classList.remove('swap');
+      }, 30);
+    }, 240);
+
+    clearTimeout(animTimer);
+    animTimer = setTimeout(function(){ root.classList.remove('theme-anim'); }, 700);
+  });
+
+  /* ================================================================
+   * ---------- Low power mode ----------
+   * ================================================================ */
+  var powerBtn = document.getElementById('powerToggle');
+  function getStoredPower(){
+    try{ return localStorage.getItem('prod99_power'); }catch(e){ return null; }
+  }
+  function storePower(v){
+    try{ localStorage.setItem('prod99_power', v); }catch(e){}
+  }
+  function applyPower(on){
+    if(on){ root.setAttribute('data-power', 'low'); }
+    else { root.removeAttribute('data-power'); }
+    powerBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    powerBtn.title = on ? 'Low power mode is on' : 'Low power mode';
+  }
+  applyPower(getStoredPower() === 'low');
+  powerBtn.addEventListener('click', function(){
+    var on = root.getAttribute('data-power') !== 'low';
+    applyPower(on);
+    storePower(on ? 'low' : 'off');
+  });
+
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ root.classList.remove('boot'); }); });
+
+  /* ================================================================
+   * ---------- Visible login/signup form ----------
+   * ================================================================ */
+  var panelSignup = document.getElementById('panelSignup');
+  var panelLogin = document.getElementById('panelLogin');
+
+  var authForm = document.getElementById('authForm');
+  var auName = document.getElementById('auName');
+  var auPass = document.getElementById('auPass');
+  var auConfirm = document.getElementById('auConfirm');
+  var auMsg = document.getElementById('authMsg');
+  var auTitle = document.getElementById('authTitle');
+  var auHint = document.getElementById('authHint');
+  var auSubmit = document.getElementById('authSubmit');
+  var auSwitch = document.getElementById('authSwitch');
+  var auSwitchText = document.getElementById('authSwitchText');
+  var authMode = 'signup';
+  var busyTimer = null;
+  var inFlight = false;
+  var submittedSuccessfully = false;
+
+  function setBusy(on){
+    clearTimeout(busyTimer);
+    inFlight = on;
+    auSubmit.disabled = on;
+  }
+
+  function setMode(which){
+    authMode = which === 'login' ? 'login' : 'signup';
+    var signup = authMode === 'signup';
+    authForm.classList.toggle('is-signup', signup);
+    auTitle.textContent = signup ? 'Create an account' : 'Log in';
+    auHint.textContent = signup ? 'Pick a username and a password. No email needed.' : 'Use the username and password you signed up with.';
+    auSubmit.textContent = signup ? 'Create account' : 'Log in';
+    auSwitchText.textContent = signup ? 'Already have an account?' : 'New here?';
+    auSwitch.textContent = signup ? 'Log in' : 'Create an account';
+    auPass.setAttribute('autocomplete', signup ? 'new-password' : 'current-password');
+    auConfirm.setAttribute('autocomplete', signup ? 'new-password' : 'off');
+    auMsg.textContent = '';
+    document.getElementById('suMsg').textContent = '';
+    document.getElementById('liMsg').textContent = '';
+    if(!inFlight){ setBusy(false); }
+  }
+
+  function closeModal(){ }
+  function toTop(){ window.scrollTo(0, 0); }
+
+  authForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(auSubmit.disabled){ return; }
+    if(!authForm.reportValidity()){ return; }
+    var panel;
+    if(authMode === 'signup'){
+      document.getElementById('suName').value = auName.value;
+      document.getElementById('suPassword').value = auPass.value;
+      document.getElementById('suConfirm').value = auConfirm.value;
+      panel = panelSignup;
+    } else {
+      document.getElementById('liEmail').value = auName.value;
+      document.getElementById('liPassword').value = auPass.value;
+      panel = panelLogin;
+    }
+    setBusy(true);
+    panel.dispatchEvent(new Event('submit', { cancelable: true }));
+  });
+
+  function focusFirstInvalid(){
+    if(!auName.value){ auName.focus(); }
+    else if(!auPass.value){ auPass.focus(); }
+    else if(authForm.classList.contains('is-signup') && auConfirm.value !== auPass.value){ auConfirm.focus(); }
+    else { auName.focus(); }
+  }
+  function mirrorMsg(){
+    var src = document.getElementById(authMode === 'signup' ? 'suMsg' : 'liMsg');
+    auMsg.textContent = src.textContent;
+    if(src.textContent){ setBusy(false); focusFirstInvalid(); }
+  }
+  if(window.MutationObserver){
+    var mo = new MutationObserver(mirrorMsg);
+    var moOpts = { childList: true, characterData: true, subtree: true };
+    mo.observe(document.getElementById('suMsg'), moOpts);
+    mo.observe(document.getElementById('liMsg'), moOpts);
+  }
+
+  auSwitch.addEventListener('click', function(){ setMode(authMode === 'signup' ? 'login' : 'signup'); auName.focus(); });
+
+  function safeNext(){
+    try{
+      var next = new URLSearchParams(location.search).get('next');
+      if(next && next.charAt(0) === '/' && next.charAt(1) !== '/' && next.charAt(1) !== '\\'){
+        return next;
+      }
+    }catch(e){}
+    return '/app/dashboard.html';
+  }
+
+  var SB_URL = "https://bbsxacrwjezzmxqazast.supabase.co";
+  var SB_KEY = "sb_publishable_zSz54-e_PF7nS9l7lzxlCQ_XSo7Trly";
+  var LEGACY_KEY = 'prod99_profile_id';
+  var sb = null;
+  var supabaseFailed = false;
+  try{
+    if(!window.supabase || !window.supabase.createClient){
+      throw new Error('Supabase library not loaded');
+    }
+    sb = window.supabase.createClient(SB_URL, SB_KEY);
+  }catch(err){
+    console.error('Supabase init failed:', err);
+    supabaseFailed = true;
+    sb = null;
+  }
+  var P99 = window.P99 = { sb: sb, profile: null, reload: null, failed: supabaseFailed };
+
+  if(supabaseFailed){
+    auSubmit.disabled = true;
+    auName.disabled = true;
+    auPass.disabled = true;
+    auConfirm.disabled = true;
+    auMsg.textContent = 'Login service is unavailable. Reload to try again.';
+  }
+
+  function clearLegacyId(){ try{ localStorage.removeItem(LEGACY_KEY); }catch(e){} }
+
+  function setProfile(profile){
+    P99.profile = profile;
+    if(profile){
+      location.replace(safeNext());
+    }
+  }
+
+  if(sb){
+    sb.auth.onAuthStateChange(function(ev){ if(ev === 'SIGNED_OUT' && P99.profile){ setProfile(null); } });
+  }
+
+  async function restoreSession(){
+    clearLegacyId();
+    if(supabaseFailed || !sb){ setProfile(null); return; }
+    try{
+      var s = await sb.auth.getSession();
+      if(s.error || !s.data || !s.data.session){ setProfile(null); return; }
+      var r = await sb.from('profiles').select('id,username').eq('auth_id', s.data.session.user.id).maybeSingle();
+      if(r.error){
+        console.error('Session restore error:', r.error);
+        setProfile(null);
+      } else if(r.data){
+        setProfile(r.data);
+      } else {
+        console.error('Auth session has no linked profile row; signing out.');
+        await sb.auth.signOut({ scope: 'local' });
+        setProfile(null);
+      }
+    }catch(err){
+      console.error('Session restore failed (likely network):', err);
+      setProfile(null);
+    }
+  }
+
+  async function callAuthFn(name, username, password){
+    if(supabaseFailed || !sb){
+      return { ok:false, message:'Login service is unavailable. Reload the page to try again.' };
+    }
+    try{
+      var r = await sb.functions.invoke(name, { body: { username: username, password: password } });
+      if(r.error){
+        console.error(name, r.error);
+        var body = null;
+        try{ body = await r.error.context.json(); }catch(e){}
+        return { ok:false, code: r.error.context && r.error.context.status, message: (body && body.error) || r.error.message };
+      }
+      if(r.data && r.data.error){
+        return { ok:false, code: r.data.code, message: r.data.error };
+      }
+      return { ok:true, data: r.data };
+    }catch(err){
+      console.error(name, err);
+      return { ok:false, message: 'Network error' };
+    }
+  }
+
+  async function applySession(d){
+    if(!d || !d.access_token || !d.refresh_token || !d.profile || !d.profile.id){ throw new Error('Malformed login response'); }
+    var r = await sb.auth.setSession({ access_token: d.access_token, refresh_token: d.refresh_token });
+    if(r.error){ throw r.error; }
+  }
+
+  panelSignup.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var msg = document.getElementById('suMsg');
+    var username = document.getElementById('suName').value.trim().toLowerCase();
+    var pass = document.getElementById('suPassword').value;
+    var confirm = document.getElementById('suConfirm').value;
+
+    if(!username || pass.length < 6){
+      msg.textContent = 'Pick a username and a password of at least 6 characters.';
+      setBusy(false);
+      return;
+    }
+    if(username.length < 3){
+      msg.textContent = 'Username must be at least 3 characters.';
+      setBusy(false);
+      return;
+    }
+    if(!/^[a-z0-9_]+$/.test(username)){
+      msg.textContent = 'Username can only use letters, numbers, and underscores.';
+      setBusy(false);
+      return;
+    }
+    if(pass !== confirm){
+      msg.textContent = 'Passwords don\'t match.';
+      setBusy(false);
+      return;
+    }
+    var res = await callAuthFn('signup', username, pass);
+    if(!res.ok){
+      if(res.message && res.message.indexOf('unavailable') > -1){
+        msg.textContent = res.message;
+      } else {
+        msg.textContent = (res.code === 409 || res.message === 'Username taken')
+          ? 'That username is already taken.'
+          : 'Something went wrong. Try again.';
+      }
+      setBusy(false);
+      return;
+    }
+    var lr = await callAuthFn('login', username, pass);
+    try{ if(!lr.ok){ throw new Error(lr.message); } await applySession(lr.data); }
+    catch(err){
+      console.error(err);
+      msg.textContent = 'Account created, but sign-in failed. Try logging in.';
+      setBusy(false);
+      return;
+    }
+    setProfile(lr.data.profile);
+    msg.textContent = '';
+    panelSignup.reset();
+    submittedSuccessfully = true;
+    setBusy(false);
+    closeModal();
+    toTop();
+  });
+
+  panelLogin.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var msg = document.getElementById('liMsg');
+    var username = document.getElementById('liEmail').value.trim().toLowerCase();
+    var pass = document.getElementById('liPassword').value;
+    var res = await callAuthFn('login', username, pass);
+    if(!res.ok){
+      if(res.message && res.message.indexOf('unavailable') > -1){
+        msg.textContent = res.message;
+      } else {
+        msg.textContent = 'No account matches that username and password.';
+      }
+      setBusy(false);
+      return;
+    }
+    try{ await applySession(res.data); }
+    catch(err){
+      console.error(err);
+      msg.textContent = 'Could not start your session. Try again.';
+      setBusy(false);
+      return;
+    }
+    setProfile(res.data.profile);
+    msg.textContent = '';
+    panelLogin.reset();
+    submittedSuccessfully = true;
+    setBusy(false);
+    closeModal();
+    toTop();
+  });
+
+  setMode('signup');
+  auName.focus();
+  restoreSession();
+})();
+</script>
+
+<script>
+(function(){"use strict";
+var d=document,R=d.documentElement;
+function $(i){return d.getElementById(i)}
+var rm=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)");
+function low(){return R.getAttribute("data-power")==="low"}
+function calm(){return low()||!!(rm&&rm.matches)}
+var subs=[];
+if(window.MutationObserver)new MutationObserver(function(){subs.forEach(function(f){f()})}).observe(R,{attributes:true,attributeFilter:["data-power","data-theme"]});
+if(rm&&rm.addEventListener)rm.addEventListener("change",function(){subs.forEach(function(f){f()})});
+var DPR=Math.min(window.devicePixelRatio||1,1.5);
+
+var AU=(function(){
+var cv=$("aurora"),gl=null,ok=false,failed=false,raf=0,t0=0,cur=null,prog,U={},K=["b","a","c","d"];
+function fail(){R.classList.add("no-gl");cv.style.display="none"}
+function hx(s){return[1,3,5].map(function(i){return parseInt(s.substr(i,2),16)/255})}
+var TH={light:{k:.3,b:hx("#F7F1EF"),a:hx("#7A0C1E"),c:hx("#D49A6A"),d:hx("#4A0812")},dark:{k:1,b:hx("#150909"),a:hx("#D6435A"),c:hx("#E0795A"),d:hx("#4A0812")}};
+function tgt(){return TH[R.getAttribute("data-theme")==="dark"?"dark":"light"]}
+function cp(o){return JSON.parse(JSON.stringify(o))}
+var FS="precision mediump float;uniform vec2 r;uniform float t,k;uniform vec3 b,a,c,d;float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+vec2(1.,1.)),f.x),f.y);}float fb(vec2 p){float s=0.,m=.5;for(int i=0;i<4;i++){s+=m*n(p);p*=2.;m*=.5;}return s;}void main(){vec2 u=gl_FragCoord.xy/r;vec2 p=u*vec2(r.x/r.y,1.)*1.4;float q=fb(p+vec2(t*.05,0.));float w=fb(p*1.3+q*2.+vec2(0.,-t*.04));vec3 o=b;o=mix(o,a,smoothstep(.35,.85,w)*.6*k*(1.-u.y*.5));o=mix(o,c,smoothstep(.45,.9,fb(p*.8+q+7.+t*.03))*.4*k*u.x);o=mix(o,d,smoothstep(.4,.9,fb(p*1.1-q+3.))*.5*k*(1.-u.x));gl_FragColor=vec4(o,1.);}";
+function sh(t,s){var o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return gl.getShaderParameter(o,gl.COMPILE_STATUS)?o:null}
+cv.addEventListener("webglcontextlost",function(e){
+  e.preventDefault();
+  cancelAnimationFrame(raf); raf=0;
+  ok=false; failed=true;
+  cv.style.display="none";
+  R.classList.add("no-gl");
+});
+cv.addEventListener("webglcontextrestored",function(e){
+  failed=false; ok=false;
+  R.classList.remove("no-gl");
+  sync();
+});
+function init(){
+  if(failed){ return false; }
+  try{gl=cv.getContext("webgl",{antialias:false,alpha:false,powerPreference:"low-power"})}catch(e){}
+  if(!gl){ return false; }
+  var v=sh(gl.VERTEX_SHADER,"attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}"),f=sh(gl.FRAGMENT_SHADER,FS);
+  if(!v||!f){
+    if(v){ gl.deleteShader(v); }
+    if(f){ gl.deleteShader(f); }
+    return false;
+  }
+  prog=gl.createProgram();gl.attachShader(prog,v);gl.attachShader(prog,f);gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog,gl.LINK_STATUS)){
+    gl.deleteProgram(prog); gl.deleteShader(v); gl.deleteShader(f);
+    prog=null; return false;
+  }
+  gl.useProgram(prog);gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  var lp=gl.getAttribLocation(prog,"p");gl.enableVertexAttribArray(lp);gl.vertexAttribPointer(lp,2,gl.FLOAT,false,0,0);
+  ["r","t","k","b","a","c","d"].forEach(function(n){U[n]=gl.getUniformLocation(prog,n)});cur=cp(tgt());
+  return true;
+}
+function size(){var w=Math.max(2,innerWidth*DPR*.5|0),h=Math.max(2,innerHeight*DPR*.5|0);if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;gl.viewport(0,0,w,h)}}
+function frame(ts){var dt=Math.min(.1,(ts-lastA)/1000);lastA=ts;var e=1-Math.exp(-dt/.23),T=tgt();cur.k+=(T.k-cur.k)*e;
+K.forEach(function(n){for(var i=0;i<3;i++)cur[n][i]+=(T[n][i]-cur[n][i])*e});size();
+gl.uniform2f(U.r,cv.width,cv.height);gl.uniform1f(U.t,(ts-t0)/1000);gl.uniform1f(U.k,cur.k);K.forEach(function(n){gl.uniform3fv(U[n],cur[n])});
+gl.drawArrays(gl.TRIANGLES,0,3);raf=requestAnimationFrame(frame)}
+var lastA=0;
+function stop(){cancelAnimationFrame(raf);raf=0}
+function sync(){stop();if(calm()){cv.style.display="none";return}
+if(!ok){
+  if(failed){ return; }
+  ok=init();
+  if(!ok){
+    if(!failed){ fail(); }
+    return;
+  }
+}
+cv.style.display="";R.classList.remove("no-gl");t0=t0||performance.now();lastA=performance.now();raf=requestAnimationFrame(frame)}
+return{sync:sync}})();
+
+var SHP=(function(){
+var cv=$("shapes"),cx=cv.getContext("2d"),raf=0,sA=.09,tx=0,ty=0,px=0,py=0,last=0,S=[];
+function octa(){var v=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]],e=[];for(var i=0;i<6;i++)for(var j=i+1;j<6;j++)if(j!==(i^1))e.push([i,j]);return{v:v,e:e}}
+var sp=0,sv=0,lastScroll=(typeof scrollY!=="undefined"?scrollY:0);
+S=[
+    Object.assign(octa(),{x:.88,y:.84,r:.05,wx:.12,wy:.09,ampX:-40,ampY:80,rotX:-1.5,rotY:1.1,rotBoost:3,sc:.5,k:0})
+  ];
+var tcx=document.createElement("canvas").getContext("2d");
+var cachedWine=null, cachedWineTheme=null;
+function wine(){
+  var theme = R.getAttribute("data-theme");
+  if(cachedWineTheme !== theme){
+    cachedWineTheme = theme;
+    tcx.fillStyle = "#7A0C1E";
+    tcx.fillStyle = getComputedStyle(R).getPropertyValue("--wine").trim() || "#7A0C1E";
+    var h = tcx.fillStyle;
+    cachedWine = h.charAt(0) === "#"
+      ? [parseInt(h.substr(1,2),16), parseInt(h.substr(3,2),16), parseInt(h.substr(5,2),16)]
+      : [122,12,30];
+  }
+  return cachedWine;
+}
+function frame(ts){raf=requestAnimationFrame(frame);var dt=Math.min(.1,(ts-last)/1000),t=ts/1000;last=ts;
+var w=innerWidth,h=innerHeight,W=w*DPR|0,H=h*DPR|0;
+var rawScroll=window.scrollY||window.pageYOffset||0;
+var sd=Math.max(-150,Math.min(150,rawScroll-lastScroll));
+lastScroll=rawScroll;
+sv+=sd*0.02;
+sv*=Math.exp(-dt*4);if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
+cx.setTransform(DPR,0,0,DPR,0,0);cx.clearRect(0,0,w,h);
+var e=1-Math.exp(-dt/.23);sA+=((R.getAttribute("data-theme")==="dark"?.14:.09)-sA)*e;
+tx+=(px-tx)*e;ty+=(py-ty)*e;cv.style.transform="perspective(1200px) rotateX("+(-ty*1.5).toFixed(3)+"deg) rotateY("+(tx*1.5).toFixed(3)+"deg)";
+var m=Math.min(w,h),sc=Math.max(1,R.scrollHeight-h),p=Math.min(1,Math.max(0,scrollY/sc)),c=wine();
+sp=p;
+cx.lineWidth=1.2;
+S.forEach(function(o,n){var al=sA;if(al<.004)return;
+cx.strokeStyle="rgba("+c[0]+","+c[1]+","+c[2]+","+al.toFixed(3)+")";
+var ax=t*o.wx + sp*o.rotX + sv*o.rotBoost;
+var ay=t*o.wy + sp*o.rotY + sv*o.rotBoost;
+var ca=Math.cos(ax),sa=Math.sin(ax),cb=Math.cos(ay),sb=Math.sin(ay);
+var rad=o.r*m*(1+sp*o.sc);
+var X=o.x*w + sp*o.ampX;
+var Y=o.y*h - sp*o.ampY + Math.sin(t*0.6+n)*4;
+var P=o.v.map(function(q){var y1=q[1]*ca-q[2]*sa,z1=q[1]*sa+q[2]*ca,x2=q[0]*cb+z1*sb,z2=-q[0]*sb+z1*cb,s=2.5/(2.5+z2);return[X+x2*rad*s,Y+y1*rad*s]});
+cx.beginPath();o.e.forEach(function(g){cx.moveTo(P[g[0]][0],P[g[0]][1]);cx.lineTo(P[g[1]][0],P[g[1]][1])});cx.stroke()})}
+function sync(){cancelAnimationFrame(raf);raf=0;if(calm()){cv.style.display="none";return}cv.style.display="";last=performance.now();raf=requestAnimationFrame(frame)}
+d.addEventListener("pointermove",function(e){px=e.clientX/innerWidth*2-1;py=e.clientY/innerHeight*2-1},{passive:true});
+return{sync:sync}})();
+
+function visuals(){AU.sync();SHP.sync()}
+subs.push(visuals);
+if(d.readyState==="complete")visuals();else addEventListener("load",visuals);
+})();
+
+(function(){var R=document.documentElement;
+if(window.CSS&&CSS.supports&&CSS.supports("animation-timeline:scroll()"))return;
+R.classList.add("geo-js");var t=false;
+function u(){var m=Math.max(1,R.scrollHeight-innerHeight);R.style.setProperty("--sp",Math.min(1,Math.max(0,scrollY/m)).toFixed(4));t=false}
+addEventListener("scroll",function(){if(!t){t=true;requestAnimationFrame(u)}},{passive:true});addEventListener("resize",u);u()})();
+</script>
+</body>
+</html>
