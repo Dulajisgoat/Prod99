@@ -790,7 +790,7 @@ html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58
       </button>
       <button class="cmd-btn" id="cmdBtn" type="button" aria-label="Open command palette"><kbd id="cmdKbd">Ctrl K</kbd></button>
       <div id="authButtons" style="display:flex;gap:10px;">
-        <a class="btn btn-solid" id="navAuthLink" href="/auth/donut-login.html">Log in</a>
+        <a class="btn btn-solid" id="navAuthLink" href="/login/">Log in</a>
       </div>
       <div id="accountChip">
         <span id="accountName"></span>
@@ -810,7 +810,7 @@ html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58
     <h1 class="h1"><span class="ln"><span style="--i:0">Teach anywhere.</span></span><span class="ln"><span style="--i:1"><em>Learn from everywhere.</em></span></span></h1>
     <p class="lede">Prod99 is a global classroom where teachers share their craft and students join from anywhere in the world. Set goals, track every study session, and trade ideas in a community that keeps you moving.</p>
     <div class="hero-ctas">
-      <a class="btn btn-solid" id="heroSignup" href="/auth/donut-login.html">Create your account</a>
+      <a class="btn btn-solid" id="heroSignup" href="/login/">Create your account</a>
       <a class="btn btn-ghost" href="#steps">See how it works</a>
     </div>
     <a class="scroll-cue" href="#steps" aria-label="Scroll to how it works"><span>Scroll</span><i aria-hidden="true"></i></a>
@@ -917,7 +917,7 @@ html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58
   <div class="cta gl rx">
     <h2>Ready to study on your own clock?</h2>
     <p>Create an account in under a minute and start your first session.</p>
-    <a class="btn btn-solid" id="ctaSignup" href="/auth/donut-login.html">Create your account</a>
+    <a class="btn btn-solid" id="ctaSignup" href="/login/">Create your account</a>
   </div>
 </div></section>
 </div>
@@ -1221,9 +1221,9 @@ html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58
   }
 
   var navAuthLink = document.getElementById('navAuthLink');
-  if(navAuthLink){ navAuthLink.addEventListener('click', function(e){ e.preventDefault(); location.href='/auth/donut-login.html'; }); }
+  if(navAuthLink){ navAuthLink.addEventListener('click', function(e){ e.preventDefault(); location.href='/login/'; }); }
   var heroSignupBtn = document.getElementById('heroSignup');
-  if(heroSignupBtn){ heroSignupBtn.addEventListener('click', function(e){ e.preventDefault(); location.href='/auth/donut-login.html'; }); }
+  if(heroSignupBtn){ heroSignupBtn.addEventListener('click', function(e){ e.preventDefault(); location.href='/login/'; }); }
   document.getElementById('modalClose').addEventListener('click', closeModal);
   overlay.addEventListener('click', function(e){ if(e.target === overlay) closeModal(); });
   auSwitch.addEventListener('click', function(){ setMode(authMode === 'signup' ? 'login' : 'signup'); auName.focus(); });
@@ -2026,7 +2026,7 @@ function syncMode(){var l=low();hi.setAttribute("aria-pressed",!l);lo.setAttribu
 hi.addEventListener("click",function(){if(low())$("powerToggle").click()});
 lo.addEventListener("click",function(){if(!low())$("powerToggle").click()});
 subs.push(syncMode);syncMode();
-var ctaBtn = $("ctaSignup"); if(ctaBtn){ ctaBtn.addEventListener("click", function(e){ e.preventDefault(); location.href='/auth/donut-login.html'; }); }
+var ctaBtn = $("ctaSignup"); if(ctaBtn){ ctaBtn.addEventListener("click", function(e){ e.preventDefault(); location.href='/login/'; }); }
 
 /* ---- Command palette ---- */
 var ck=$("cmdk"),ci=$("cmdkInput"),cl=$("cmdkList"),items=[],shown=[],sel=0,prev=null;
@@ -2035,12 +2035,10 @@ function go(id){return function(){var e=$(id);if(e)e.scrollIntoView({behavior:ca
 function build(){var inApp=R.classList.contains("in-app"),out=$("authButtons").style.display==="none";items=[];
 if(!inApp)[["Steps","steps"],["Inside","inside"],["Features","features"],["Built","built"],["FAQ","faq"]].forEach(function(x){items.push({t:"Jump to "+x[0],g:"Section",f:go(x[1])})});
 items.push({t:"Open workspace",g:"App",f:function(){
-  // Only open the auth modal if the user isn't already authenticated; otherwise
-  // just scroll to the workspace. This avoids opening login when already logged in.
-  if(out){ go("workspace")(); }
-  else { $("openAuth").click(); }
+  if(out){ location.href='/dashboard/'; } // If logged in, go to dashboard
+  else { location.href='/login/'; }       // If logged out, go to login
 }});
-if(!out){items.push({t:"Log in",g:"Account",f:function(){location.href='/auth/donut-login.html'}});items.push({t:"Create an account",g:"Account",f:function(){location.href='/auth/donut-login.html'}})}
+if(!out){items.push({t:"Log in",g:"Account",f:function(){location.href='/login/'}});items.push({t:"Create an account",g:"Account",f:function(){location.href='/login/'}})}
 else items.push({t:"Log out",g:"Account",f:function(){$("logoutBtn").click()}});
 if(out&&window.P99&&P99.exportAll){items.push({t:"Export my data",g:"Account",b:true,f:function(){P99.exportAll()}});items.push({t:"Import data",g:"Account",b:true,f:function(){var i=d.createElement("input");i.type="file";i.accept="application/json,.json";i.addEventListener("change",function(){if(i.files[0])P99.importJson(i.files[0])});i.click()}})}
 items.push({t:"Toggle theme",g:"Settings",f:function(){$("themeToggle").click()}});
@@ -2084,4 +2082,5 @@ addEventListener("scroll",function(){if(!t){t=true;requestAnimationFrame(u)}},{p
 </script>
 </body>
 </html>
-<!-- Auth buttons (navAuthLink, heroSignup, ctaSignup) updated to link to /auth/donut-login.html instead of opening the old popup modal. -->
+<!-- Auth buttons (navAuthLink, heroSignup, ctaSignup) updated to link to /login/ instead of opening the old popup modal. -->
+<!-- Login paths updated from /auth/donut-login.html to the new clean /login/ URL. -->
