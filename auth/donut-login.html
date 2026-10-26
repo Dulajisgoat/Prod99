@@ -7,7 +7,6 @@
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="/favicon.png" sizes="192x192">
 <link rel="apple-touch-icon" href="/favicon.png">
-<!-- Inline blocking script: sets theme/power before first paint, no flash. New code, not an edit to any existing function. -->
 <script>
 (function(){
   try{
@@ -58,7 +57,7 @@
   .btn-ghost img{ width:18px; height:18px; display:block; }
   .toggles{ display:flex; gap:10px; }
 
-  /* ---------- theme/power toggle buttons: .ico / .bat copied verbatim from donut99.html ---------- */
+  /* ---------- theme/power toggle buttons ---------- */
   .theme-toggle{
     position:relative; width:40px; height:40px; display:flex; align-items:center; justify-content:center;
     border-radius:999px; border:1px solid var(--border); background:transparent; color:var(--ink);
@@ -97,15 +96,9 @@
     box-shadow:0 32px 64px -24px rgba(50,20,30,.4), 0 16px 32px -16px rgba(0,0,0,.25);
     transition:background-color .3s ease, border-color .3s ease;
   }
-  .wordmark{
-    display:block; margin-bottom:28px;
-  }
-  .wordmark img{
-    display:block; height:32px; width:auto; object-fit:contain;
-  }
-  /* Default: light mode shows light logo */
+  .wordmark{ display:block; margin-bottom:28px; }
+  .wordmark img{ display:block; height:32px; width:auto; object-fit:contain; }
   .wordmark .logo-dark{ display:none; }
-  /* Dark mode: hide light logo, show dark logo */
   html[data-theme="dark"] .wordmark .logo-light{ display:none; }
   html[data-theme="dark"] .wordmark .logo-dark{ display:block; }
   .card h1{ font-size:1.75rem; font-weight:600; letter-spacing:-.04em; line-height:1.1; margin:0 0 8px; }
@@ -141,7 +134,6 @@
 
   :focus-visible{ outline:2px solid var(--wine); outline-offset:2px; }
 
-  /* ---------- low-end device mode: no blur, no animation, solid surfaces ---------- */
   html[data-power="low"] .card{ box-shadow:none; }
   html[data-power="low"] *, html[data-power="low"] *::before, html[data-power="low"] *::after{
     transition-duration:.01s!important; animation-duration:.01s!important;
@@ -155,15 +147,6 @@
   }
 </style>
 <style id="visuals">
-/* ====================================================================
-   Visual layers re-added from donut99.html: aurora / wireframe octahedron /
-   3D geometry field / no-gl & reduced-motion fallback gradient.
-   This block is new and isolated — it does not touch the form, buttons,
-   inputs, topbar, or card layout rules above (apart from the two
-   position/z-index lines at the very end, which are additive).
-   ==================================================================== */
-
-/* ---- Animatable theme colours: ease over 0.6s when data-theme changes ---- */
 @property --bg{syntax:'<color>';inherits:true;initial-value:#F7F1EF}
 @property --surface{syntax:'<color>';inherits:true;initial-value:#FFFFFF}
 @property --ink{syntax:'<color>';inherits:true;initial-value:#1C1412}
@@ -179,21 +162,13 @@ html{
   transition-timing-function:cubic-bezier(.4,0,.2,1);
 }
 html.boot{transition:none!important}
-
-/* ---- Aurora / wireframe canvases ---- */
 #aurora,#shapes{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
 #shapes{transform-origin:50% 50%}
-
-/* ---- Fallback gradient: shown for no-gl, low-power, or reduced-motion ---- */
 body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;display:none;background:radial-gradient(60% 50% at 12% 0%,rgba(122,12,30,.2),transparent 70%),radial-gradient(50% 45% at 92% 45%,rgba(212,154,106,.2),transparent 70%),radial-gradient(55% 50% at 40% 105%,rgba(74,8,18,.2),transparent 70%)}
 html[data-theme="dark"] body::before{opacity:.85}
 html.no-gl body::before,html[data-power="low"] body::before{display:block}
 html[data-power="low"] #aurora,html[data-power="low"] #shapes{display:none}
 @media(prefers-reduced-motion:reduce){#aurora,#shapes{display:none}body::before{display:block}}
-
-/* ===== 3D geometry: real CSS 3D solids (cubes, pyramids, wire spheres) =====
-   Outer <b> slides sideways + turns with page scroll; inner solid spins on its own.
-   Edge/face colours derive from --wine so both themes stay on-palette and ease with the theme change. */
 :root{--sp:0}
 .geo{--edge:color-mix(in srgb,var(--wine) 52%,transparent);--edge2:color-mix(in srgb,var(--wine) 30%,transparent)}
 html[data-theme="dark"] .geo{--edge:color-mix(in srgb,var(--wine) 70%,transparent);--edge2:color-mix(in srgb,var(--wine) 42%,transparent)}
@@ -204,7 +179,6 @@ html[data-theme="dark"] .geo{--edge:color-mix(in srgb,var(--wine) 70%,transparen
 .geo u{position:absolute;display:block;backface-visibility:visible;transition:border-color .6s cubic-bezier(.4,0,.2,1),background-color .6s cubic-bezier(.4,0,.2,1)}
 html.boot .geo u{transition:none}
 @keyframes spin3d{from{transform:rotateX(-24deg) rotateY(0)}to{transform:rotateX(-24deg) rotateY(360deg)}}
-/* cube */
 .cube u{inset:0;border:1.5px solid var(--edge);background:color-mix(in srgb,var(--wine) var(--a,9%),transparent)}
 .cube u:nth-child(1){transform:translateZ(calc(var(--s)/2));--a:13%}
 .cube u:nth-child(2){transform:rotateY(180deg) translateZ(calc(var(--s)/2));--a:5%}
@@ -212,7 +186,6 @@ html.boot .geo u{transition:none}
 .cube u:nth-child(4){transform:rotateY(-90deg) translateZ(calc(var(--s)/2));--a:7%}
 .cube u:nth-child(5){transform:rotateX(90deg) translateZ(calc(var(--s)/2));--a:16%}
 .cube u:nth-child(6){transform:rotateX(-90deg) translateZ(calc(var(--s)/2));--a:4%}
-/* square pyramid (height .9 x base, slant face tilted 29deg) */
 .pyr{--L:calc(var(--s)*1.03)}
 .pyr u{left:0;width:var(--s);top:calc(var(--s)/2 - var(--L));height:var(--L);transform-origin:50% 100%;
   background:color-mix(in srgb,var(--wine) var(--a,10%),transparent);clip-path:polygon(50% 0,100% 100%,0 100%)}
@@ -225,11 +198,9 @@ html.boot .geo u{transition:none}
 .pyr u.bs{top:0;height:var(--s);transform:rotateX(90deg);transform-origin:50% 50%;clip-path:none;border:1.5px solid var(--edge);background:color-mix(in srgb,var(--wine) 4%,transparent)}
 .pyr u.bs::after{display:none}
 .pyr{margin-top:calc(var(--s)*.18)}
-/* wire sphere: four great circles */
 .sph u{inset:0;border:1.5px solid var(--edge2);border-radius:50%}
 .sph u:nth-child(2){transform:rotateY(45deg)}.sph u:nth-child(3){transform:rotateY(90deg)}.sph u:nth-child(4){transform:rotateY(135deg)}
 .sph::after{content:"";position:absolute;inset:0;border-radius:50%;border:1.5px solid var(--edge);transform:rotateX(90deg)}
-/* placement: sizes in px, travel sideways in vw */
 .g1{--x:14%;--y:20%;--s:70px;--dx:62;--dy:40;--r:140;--t:26s}
 .g2{--x:84%;--y:28%;--s:110px;--dx:-66;--dy:90;--r:-120;--t:30s;--dir:reverse;--dl:-6s}
 .g3{--x:72%;--y:80%;--s:120px;--dx:-58;--dy:-70;--r:180;--t:34s}
@@ -237,26 +208,17 @@ html.boot .geo u{transition:none}
 .g5{--x:50%;--y:14%;--s:60px;--dx:-50;--dy:120;--r:200;--t:20s;--dl:-9s}
 .g6{--x:92%;--y:62%;--s:44px;--dx:-72;--dy:-90;--r:240;--t:18s;--dl:-5s}
 .g7{--x:8%;--y:46%;--s:140px;--dx:58;--dy:60;--r:100;--t:38s;--dir:reverse}
-/* slide sideways on scroll: pure CSS scroll timeline, GPU transform only */
 @supports (animation-timeline:scroll()){
   @keyframes geoSlide{from{transform:translate3d(0,0,0) rotateY(0) rotateX(0)}to{transform:translate3d(calc(var(--dx)*1vw),calc(var(--dy)*1px),0) rotateY(calc(var(--r)*1deg)) rotateX(calc(var(--r)*.3deg))}}
   .geo b{animation:geoSlide linear both;animation-timeline:scroll(root block)}
 }
-/* fallback via --sp */
 html.geo-js .geo b{transform:translate3d(calc(var(--dx)*var(--sp)*1vw),calc(var(--dy)*var(--sp)*1px),0) rotateY(calc(var(--r)*var(--sp)*1deg));animation:none}
 html.geo-js .geo i{animation:spin3d var(--t,22s) linear infinite var(--dir,normal)}
-/* Low-end: same seven solids as high-end, but static (still 3D, no motion, no transitions) */
 html[data-power="low"] .geo b,html[data-power="low"] .geo i{animation:none!important;will-change:auto}
 html[data-power="low"] .geo b{transform:none!important}
 html[data-power="low"] .geo u{transition:none!important}
 @media(prefers-reduced-motion:reduce){.geo b,.geo i{animation:none!important;transform:none}.geo i{transform:rotateX(-24deg) rotateY(32deg)}}
 @media(max-width:760px){.g7,.g6{display:none}.g1{--s:52px}.g2{--s:80px}.g3{--s:84px}.g4{--s:70px}}
-
-/* ---- Card-surface uplift: the aurora/geometry sit at z-index:-1 on the body,
-   so a normal stacking element already paints above them. These two lines are
-   the only touch on .card/.topbar, added because the brief asked for them
-   explicitly — .topbar already has position:fixed, so only its z-index is set
-   here to avoid overriding that. ---- */
 .card{position:relative;z-index:1}
 .topbar{z-index:2}
 </style>
@@ -355,15 +317,9 @@ html[data-power="low"] .geo u{transition:none!important}
 <script>
 (function(){
   "use strict";
-
   var root = document.documentElement;
-
-  /* ================================================================
-   * ---------- Theme toggle ----------
-   * ================================================================ */
   var LOGO_LIGHT = "/logo-light.png";
   var LOGO_DARK = "/logo-dark.png";
-
   var navLogo = document.getElementById('logoNav') || document.getElementById('navLogo');
   var heroLogo = document.getElementById('heroLogo');
   var footerLogo = document.getElementById('footerLogo');
@@ -371,23 +327,16 @@ html[data-power="low"] .geo u{transition:none!important}
   var toggle = document.getElementById('themeToggle');
 
   function logoFor(theme){ return theme === 'dark' ? LOGO_DARK : LOGO_LIGHT; }
-
   function applyLogos(theme){
     var src = logoFor(theme);
     navLogo.src = src;
     heroLogo.src = src;
     footerLogo.src = src;
   }
+  function getStoredTheme(){ try{ return localStorage.getItem('prod99_theme'); }catch(e){ return null; } }
+  function storeTheme(t){ try{ localStorage.setItem('prod99_theme', t); }catch(e){} }
 
-  function getStoredTheme(){
-    try{ return localStorage.getItem('prod99_theme'); }catch(e){ return null; }
-  }
-  function storeTheme(t){
-    try{ localStorage.setItem('prod99_theme', t); }catch(e){}
-  }
-
-  var initial = getStoredTheme() ||
-    (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  var initial = getStoredTheme() || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   root.setAttribute('data-theme', initial);
   applyLogos(initial);
 
@@ -418,7 +367,6 @@ html[data-power="low"] .geo u{transition:none!important}
     heroWrap.classList.add('swap');
     root.setAttribute('data-theme', next);
     storeTheme(next);
-
     clearTimeout(logoTimer);
     logoTimer = setTimeout(function(){
       applyLogos(next);
@@ -427,24 +375,15 @@ html[data-power="low"] .geo u{transition:none!important}
         heroWrap.classList.remove('swap');
       }, 30);
     }, 240);
-
     clearTimeout(animTimer);
     animTimer = setTimeout(function(){ root.classList.remove('theme-anim'); }, 700);
   });
 
-  /* ================================================================
-   * ---------- Low power mode ----------
-   * ================================================================ */
   var powerBtn = document.getElementById('powerToggle');
-  function getStoredPower(){
-    try{ return localStorage.getItem('prod99_power'); }catch(e){ return null; }
-  }
-  function storePower(v){
-    try{ localStorage.setItem('prod99_power', v); }catch(e){}
-  }
+  function getStoredPower(){ try{ return localStorage.getItem('prod99_power'); }catch(e){ return null; } }
+  function storePower(v){ try{ localStorage.setItem('prod99_power', v); }catch(e){} }
   function applyPower(on){
-    if(on){ root.setAttribute('data-power', 'low'); }
-    else { root.removeAttribute('data-power'); }
+    if(on){ root.setAttribute('data-power', 'low'); } else { root.removeAttribute('data-power'); }
     powerBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
     powerBtn.title = on ? 'Low power mode is on' : 'Low power mode';
   }
@@ -457,12 +396,8 @@ html[data-power="low"] .geo u{transition:none!important}
 
   requestAnimationFrame(function(){ requestAnimationFrame(function(){ root.classList.remove('boot'); }); });
 
-  /* ================================================================
-   * ---------- Visible login/signup form ----------
-   * ================================================================ */
   var panelSignup = document.getElementById('panelSignup');
   var panelLogin = document.getElementById('panelLogin');
-
   var authForm = document.getElementById('authForm');
   var auName = document.getElementById('auName');
   var auPass = document.getElementById('auPass');
@@ -478,12 +413,7 @@ html[data-power="low"] .geo u{transition:none!important}
   var inFlight = false;
   var submittedSuccessfully = false;
 
-  function setBusy(on){
-    clearTimeout(busyTimer);
-    inFlight = on;
-    auSubmit.disabled = on;
-  }
-
+  function setBusy(on){ clearTimeout(busyTimer); inFlight = on; auSubmit.disabled = on; }
   function setMode(which){
     authMode = which === 'login' ? 'login' : 'signup';
     var signup = authMode === 'signup';
@@ -500,7 +430,6 @@ html[data-power="low"] .geo u{transition:none!important}
     document.getElementById('liMsg').textContent = '';
     if(!inFlight){ setBusy(false); }
   }
-
   function closeModal(){ }
   function toTop(){ window.scrollTo(0, 0); }
 
@@ -546,11 +475,9 @@ html[data-power="low"] .geo u{transition:none!important}
   function safeNext(){
     try{
       var next = new URLSearchParams(location.search).get('next');
-      if(next && next.charAt(0) === '/' && next.charAt(1) !== '/' && next.charAt(1) !== '\\'){
-        return next;
-      }
+      if(next && next.charAt(0) === '/' && next.charAt(1) !== '/' && next.charAt(1) !== '\\'){ return next; }
     }catch(e){}
-    return '/app/dashboard.html';
+    return '/dashboard/'; // UPDATED TO NEW DASHBOARD PATH
   }
 
   var SB_URL = "https://bbsxacrwjezzmxqazast.supabase.co";
@@ -559,9 +486,7 @@ html[data-power="low"] .geo u{transition:none!important}
   var sb = null;
   var supabaseFailed = false;
   try{
-    if(!window.supabase || !window.supabase.createClient){
-      throw new Error('Supabase library not loaded');
-    }
+    if(!window.supabase || !window.supabase.createClient){ throw new Error('Supabase library not loaded'); }
     sb = window.supabase.createClient(SB_URL, SB_KEY);
   }catch(err){
     console.error('Supabase init failed:', err);
@@ -579,17 +504,12 @@ html[data-power="low"] .geo u{transition:none!important}
   }
 
   function clearLegacyId(){ try{ localStorage.removeItem(LEGACY_KEY); }catch(e){} }
-
   function setProfile(profile){
     P99.profile = profile;
-    if(profile){
-      location.replace(safeNext());
-    }
+    if(profile){ location.replace(safeNext()); }
   }
 
-  if(sb){
-    sb.auth.onAuthStateChange(function(ev){ if(ev === 'SIGNED_OUT' && P99.profile){ setProfile(null); } });
-  }
+  if(sb){ sb.auth.onAuthStateChange(function(ev){ if(ev === 'SIGNED_OUT' && P99.profile){ setProfile(null); } }); }
 
   async function restoreSession(){
     clearLegacyId();
@@ -615,9 +535,7 @@ html[data-power="low"] .geo u{transition:none!important}
   }
 
   async function callAuthFn(name, username, password){
-    if(supabaseFailed || !sb){
-      return { ok:false, message:'Login service is unavailable. Reload the page to try again.' };
-    }
+    if(supabaseFailed || !sb){ return { ok:false, message:'Login service is unavailable. Reload the page to try again.' }; }
     try{
       var r = await sb.functions.invoke(name, { body: { username: username, password: password } });
       if(r.error){
@@ -626,9 +544,7 @@ html[data-power="low"] .geo u{transition:none!important}
         try{ body = await r.error.context.json(); }catch(e){}
         return { ok:false, code: r.error.context && r.error.context.status, message: (body && body.error) || r.error.message };
       }
-      if(r.data && r.data.error){
-        return { ok:false, code: r.data.code, message: r.data.error };
-      }
+      if(r.data && r.data.error){ return { ok:false, code: r.data.code, message: r.data.error }; }
       return { ok:true, data: r.data };
     }catch(err){
       console.error(name, err);
@@ -649,45 +565,21 @@ html[data-power="low"] .geo u{transition:none!important}
     var pass = document.getElementById('suPassword').value;
     var confirm = document.getElementById('suConfirm').value;
 
-    if(!username || pass.length < 6){
-      msg.textContent = 'Pick a username and a password of at least 6 characters.';
-      setBusy(false);
-      return;
-    }
-    if(username.length < 3){
-      msg.textContent = 'Username must be at least 3 characters.';
-      setBusy(false);
-      return;
-    }
-    if(!/^[a-z0-9_]+$/.test(username)){
-      msg.textContent = 'Username can only use letters, numbers, and underscores.';
-      setBusy(false);
-      return;
-    }
-    if(pass !== confirm){
-      msg.textContent = 'Passwords don\'t match.';
-      setBusy(false);
-      return;
-    }
+    if(!username || pass.length < 6){ msg.textContent = 'Pick a username and a password of at least 6 characters.'; setBusy(false); return; }
+    if(username.length < 3){ msg.textContent = 'Username must be at least 3 characters.'; setBusy(false); return; }
+    if(!/^[a-z0-9_]+$/.test(username)){ msg.textContent = 'Username can only use letters, numbers, and underscores.'; setBusy(false); return; }
+    if(pass !== confirm){ msg.textContent = 'Passwords don\'t match.'; setBusy(false); return; }
+
     var res = await callAuthFn('signup', username, pass);
     if(!res.ok){
-      if(res.message && res.message.indexOf('unavailable') > -1){
-        msg.textContent = res.message;
-      } else {
-        msg.textContent = (res.code === 409 || res.message === 'Username taken')
-          ? 'That username is already taken.'
-          : 'Something went wrong. Try again.';
-      }
-      setBusy(false);
-      return;
+      if(res.message && res.message.indexOf('unavailable') > -1){ msg.textContent = res.message; }
+      else { msg.textContent = (res.code === 409 || res.message === 'Username taken') ? 'That username is already taken.' : 'Something went wrong. Try again.'; }
+      setBusy(false); return;
     }
     var lr = await callAuthFn('login', username, pass);
     try{ if(!lr.ok){ throw new Error(lr.message); } await applySession(lr.data); }
     catch(err){
-      console.error(err);
-      msg.textContent = 'Account created, but sign-in failed. Try logging in.';
-      setBusy(false);
-      return;
+      console.error(err); msg.textContent = 'Account created, but sign-in failed. Try logging in.'; setBusy(false); return;
     }
     setProfile(lr.data.profile);
     msg.textContent = '';
@@ -705,20 +597,13 @@ html[data-power="low"] .geo u{transition:none!important}
     var pass = document.getElementById('liPassword').value;
     var res = await callAuthFn('login', username, pass);
     if(!res.ok){
-      if(res.message && res.message.indexOf('unavailable') > -1){
-        msg.textContent = res.message;
-      } else {
-        msg.textContent = 'No account matches that username and password.';
-      }
-      setBusy(false);
-      return;
+      if(res.message && res.message.indexOf('unavailable') > -1){ msg.textContent = res.message; }
+      else { msg.textContent = 'No account matches that username and password.'; }
+      setBusy(false); return;
     }
     try{ await applySession(res.data); }
     catch(err){
-      console.error(err);
-      msg.textContent = 'Could not start your session. Try again.';
-      setBusy(false);
-      return;
+      console.error(err); msg.textContent = 'Could not start your session. Try again.'; setBusy(false); return;
     }
     setProfile(res.data.profile);
     msg.textContent = '';
@@ -756,33 +641,16 @@ function tgt(){return TH[R.getAttribute("data-theme")==="dark"?"dark":"light"]}
 function cp(o){return JSON.parse(JSON.stringify(o))}
 var FS="precision mediump float;uniform vec2 r;uniform float t,k;uniform vec3 b,a,c,d;float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+vec2(1.,1.)),f.x),f.y);}float fb(vec2 p){float s=0.,m=.5;for(int i=0;i<4;i++){s+=m*n(p);p*=2.;m*=.5;}return s;}void main(){vec2 u=gl_FragCoord.xy/r;vec2 p=u*vec2(r.x/r.y,1.)*1.4;float q=fb(p+vec2(t*.05,0.));float w=fb(p*1.3+q*2.+vec2(0.,-t*.04));vec3 o=b;o=mix(o,a,smoothstep(.35,.85,w)*.6*k*(1.-u.y*.5));o=mix(o,c,smoothstep(.45,.9,fb(p*.8+q+7.+t*.03))*.4*k*u.x);o=mix(o,d,smoothstep(.4,.9,fb(p*1.1-q+3.))*.5*k*(1.-u.x));gl_FragColor=vec4(o,1.);}";
 function sh(t,s){var o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return gl.getShaderParameter(o,gl.COMPILE_STATUS)?o:null}
-cv.addEventListener("webglcontextlost",function(e){
-  e.preventDefault();
-  cancelAnimationFrame(raf); raf=0;
-  ok=false; failed=true;
-  cv.style.display="none";
-  R.classList.add("no-gl");
-});
-cv.addEventListener("webglcontextrestored",function(e){
-  failed=false; ok=false;
-  R.classList.remove("no-gl");
-  sync();
-});
+cv.addEventListener("webglcontextlost",function(e){e.preventDefault();cancelAnimationFrame(raf);raf=0;ok=false;failed=true;cv.style.display="none";R.classList.add("no-gl");});
+cv.addEventListener("webglcontextrestored",function(e){failed=false;ok=false;R.classList.remove("no-gl");sync();});
 function init(){
   if(failed){ return false; }
   try{gl=cv.getContext("webgl",{antialias:false,alpha:false,powerPreference:"low-power"})}catch(e){}
   if(!gl){ return false; }
   var v=sh(gl.VERTEX_SHADER,"attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}"),f=sh(gl.FRAGMENT_SHADER,FS);
-  if(!v||!f){
-    if(v){ gl.deleteShader(v); }
-    if(f){ gl.deleteShader(f); }
-    return false;
-  }
+  if(!v||!f){ if(v){ gl.deleteShader(v); } if(f){ gl.deleteShader(f); } return false; }
   prog=gl.createProgram();gl.attachShader(prog,v);gl.attachShader(prog,f);gl.linkProgram(prog);
-  if(!gl.getProgramParameter(prog,gl.LINK_STATUS)){
-    gl.deleteProgram(prog); gl.deleteShader(v); gl.deleteShader(f);
-    prog=null; return false;
-  }
+  if(!gl.getProgramParameter(prog,gl.LINK_STATUS)){ gl.deleteProgram(prog); gl.deleteShader(v); gl.deleteShader(f); prog=null; return false; }
   gl.useProgram(prog);gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
   var lp=gl.getAttribLocation(prog,"p");gl.enableVertexAttribArray(lp);gl.vertexAttribPointer(lp,2,gl.FLOAT,false,0,0);
   ["r","t","k","b","a","c","d"].forEach(function(n){U[n]=gl.getUniformLocation(prog,n)});cur=cp(tgt());
@@ -796,14 +664,7 @@ gl.drawArrays(gl.TRIANGLES,0,3);raf=requestAnimationFrame(frame)}
 var lastA=0;
 function stop(){cancelAnimationFrame(raf);raf=0}
 function sync(){stop();if(calm()){cv.style.display="none";return}
-if(!ok){
-  if(failed){ return; }
-  ok=init();
-  if(!ok){
-    if(!failed){ fail(); }
-    return;
-  }
-}
+if(!ok){ if(failed){ return; } ok=init(); if(!ok){ if(!failed){ fail(); } return; } }
 cv.style.display="";R.classList.remove("no-gl");t0=t0||performance.now();lastA=performance.now();raf=requestAnimationFrame(frame)}
 return{sync:sync}})();
 
@@ -811,9 +672,7 @@ var SHP=(function(){
 var cv=$("shapes"),cx=cv.getContext("2d"),raf=0,sA=.09,tx=0,ty=0,px=0,py=0,last=0,S=[];
 function octa(){var v=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]],e=[];for(var i=0;i<6;i++)for(var j=i+1;j<6;j++)if(j!==(i^1))e.push([i,j]);return{v:v,e:e}}
 var sp=0,sv=0,lastScroll=(typeof scrollY!=="undefined"?scrollY:0);
-S=[
-    Object.assign(octa(),{x:.88,y:.84,r:.05,wx:.12,wy:.09,ampX:-40,ampY:80,rotX:-1.5,rotY:1.1,rotBoost:3,sc:.5,k:0})
-  ];
+S=[Object.assign(octa(),{x:.88,y:.84,r:.05,wx:.12,wy:.09,ampX:-40,ampY:80,rotX:-1.5,rotY:1.1,rotBoost:3,sc:.5,k:0})];
 var tcx=document.createElement("canvas").getContext("2d");
 var cachedWine=null, cachedWineTheme=null;
 function wine(){
@@ -823,9 +682,7 @@ function wine(){
     tcx.fillStyle = "#7A0C1E";
     tcx.fillStyle = getComputedStyle(R).getPropertyValue("--wine").trim() || "#7A0C1E";
     var h = tcx.fillStyle;
-    cachedWine = h.charAt(0) === "#"
-      ? [parseInt(h.substr(1,2),16), parseInt(h.substr(3,2),16), parseInt(h.substr(5,2),16)]
-      : [122,12,30];
+    cachedWine = h.charAt(0) === "#" ? [parseInt(h.substr(1,2),16), parseInt(h.substr(3,2),16), parseInt(h.substr(5,2),16)] : [122,12,30];
   }
   return cachedWine;
 }
@@ -834,22 +691,17 @@ var w=innerWidth,h=innerHeight,W=w*DPR|0,H=h*DPR|0;
 var rawScroll=window.scrollY||window.pageYOffset||0;
 var sd=Math.max(-150,Math.min(150,rawScroll-lastScroll));
 lastScroll=rawScroll;
-sv+=sd*0.02;
-sv*=Math.exp(-dt*4);if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
+sv+=sd*0.02; sv*=Math.exp(-dt*4); if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
 cx.setTransform(DPR,0,0,DPR,0,0);cx.clearRect(0,0,w,h);
 var e=1-Math.exp(-dt/.23);sA+=((R.getAttribute("data-theme")==="dark"?.14:.09)-sA)*e;
 tx+=(px-tx)*e;ty+=(py-ty)*e;cv.style.transform="perspective(1200px) rotateX("+(-ty*1.5).toFixed(3)+"deg) rotateY("+(tx*1.5).toFixed(3)+"deg)";
 var m=Math.min(w,h),sc=Math.max(1,R.scrollHeight-h),p=Math.min(1,Math.max(0,scrollY/sc)),c=wine();
-sp=p;
-cx.lineWidth=1.2;
+sp=p; cx.lineWidth=1.2;
 S.forEach(function(o,n){var al=sA;if(al<.004)return;
 cx.strokeStyle="rgba("+c[0]+","+c[1]+","+c[2]+","+al.toFixed(3)+")";
-var ax=t*o.wx + sp*o.rotX + sv*o.rotBoost;
-var ay=t*o.wy + sp*o.rotY + sv*o.rotBoost;
+var ax=t*o.wx + sp*o.rotX + sv*o.rotBoost; var ay=t*o.wy + sp*o.rotY + sv*o.rotBoost;
 var ca=Math.cos(ax),sa=Math.sin(ax),cb=Math.cos(ay),sb=Math.sin(ay);
-var rad=o.r*m*(1+sp*o.sc);
-var X=o.x*w + sp*o.ampX;
-var Y=o.y*h - sp*o.ampY + Math.sin(t*0.6+n)*4;
+var rad=o.r*m*(1+sp*o.sc); var X=o.x*w + sp*o.ampX; var Y=o.y*h - sp*o.ampY + Math.sin(t*0.6+n)*4;
 var P=o.v.map(function(q){var y1=q[1]*ca-q[2]*sa,z1=q[1]*sa+q[2]*ca,x2=q[0]*cb+z1*sb,z2=-q[0]*sb+z1*cb,s=2.5/(2.5+z2);return[X+x2*rad*s,Y+y1*rad*s]});
 cx.beginPath();o.e.forEach(function(g){cx.moveTo(P[g[0]][0],P[g[0]][1]);cx.lineTo(P[g[1]][0],P[g[1]][1])});cx.stroke()})}
 function sync(){cancelAnimationFrame(raf);raf=0;if(calm()){cv.style.display="none";return}cv.style.display="";last=performance.now();raf=requestAnimationFrame(frame)}
@@ -860,7 +712,6 @@ function visuals(){AU.sync();SHP.sync()}
 subs.push(visuals);
 if(d.readyState==="complete")visuals();else addEventListener("load",visuals);
 })();
-
 (function(){var R=document.documentElement;
 if(window.CSS&&CSS.supports&&CSS.supports("animation-timeline:scroll()"))return;
 R.classList.add("geo-js");var t=false;
