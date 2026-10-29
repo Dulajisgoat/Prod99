@@ -228,12 +228,7 @@ nav{background:var(--glass);backdrop-filter:blur(22px) saturate(180%);-webkit-ba
 .btn-ghost{background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 input,select,textarea{border-radius:12px;background:var(--glass);backdrop-filter:blur(8px);color:var(--ink);border:1px solid var(--border);font-family:inherit;font-size:.95rem;padding:11px 12px;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--wine);box-shadow:0 0 0 4px var(--wine-soft)}
-.theme-toggle{background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .3s,border-color .2s}
-.theme-toggle:hover{transform:rotate(18deg)}
-.theme-toggle .ico{position:relative;width:18px;height:18px;border-radius:50%;box-shadow:inset -6px -3px 0 0 currentColor;transition:all .55s cubic-bezier(.5,1.6,.4,1)}
-.theme-toggle .ico::before{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px dotted currentColor;opacity:0;transform:scale(.4);transition:all .55s}
-html[data-theme="dark"] .theme-toggle .ico{background:currentColor;box-shadow:none;transform:scale(.62)}
-html[data-theme="dark"] .theme-toggle .ico::before{opacity:1;transform:scale(1.4) rotate(90deg)}
+.theme-toggle{background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:border-color .2s}
 .hero-logo{position:relative;animation:float 6s ease-in-out infinite}
 .hero-logo::before{content:"";position:absolute;inset:-14%;border-radius:50%;background:radial-gradient(var(--wine-soft),transparent 70%);animation:pulse 4s ease-in-out infinite}
 .hero-logo img{position:relative}
@@ -302,14 +297,6 @@ html.no-prop.theme-anim,html.no-prop.theme-anim *,html.no-prop.theme-anim *::bef
 .brand img{transition:opacity .24s ease}
 html.logo-swap .brand img{opacity:0}
 
-/* ---- Icon buttons (pure CSS icons) ---- */
-.power-toggle:hover{transform:none}
-.bat{position:relative;box-sizing:content-box;width:18px;height:9px;margin-right:3px;border:2px solid currentColor;border-radius:3px}
-.bat::before{content:"";position:absolute;left:1px;top:1px;bottom:1px;right:1px;background:currentColor;border-radius:1px;transform-origin:left center;transition:transform .35s cubic-bezier(.4,0,.2,1)}
-.bat::after{content:"";position:absolute;right:-5px;top:50%;width:2px;height:4px;margin-top:-2px;background:currentColor;border-radius:0 2px 2px 0}
-html[data-power="low"] .power-toggle{color:var(--wine);border-color:var(--wine)}
-html[data-power="low"] .bat::before{transform:scaleX(.32)}
-
 /* ---- Auth modal ---- */
 .overlay{display:flex;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s ease,visibility 0s linear .25s}
 .overlay.open{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s ease,visibility 0s}
@@ -338,22 +325,6 @@ html[data-power="low"] .bat::before{transform:scaleX(.32)}
 .modal :focus-visible{outline:2px solid var(--wine);outline-offset:2px}
 .modal input:focus-visible{outline:none}
 
-/* ---- Low power mode ---- */
-html[data-power="low"]{--glass:rgba(255,255,255,.94);--glass-b:rgba(28,20,18,.1);--shadow-c:rgba(74,8,18,.08);--shadow:0 2px 8px var(--shadow-c)}
-html[data-theme="dark"][data-power="low"]{--glass:rgba(34,17,18,.96);--glass-b:rgba(255,255,255,.1);--shadow-c:rgba(0,0,0,.3)}
-html[data-power="low"],html[data-power="low"] *,html[data-power="low"] *::before,html[data-power="low"] *::after{
-  animation:none!important;
-  transition-duration:.01s!important;
-  transition-delay:0s!important;
-  scroll-behavior:auto!important;
-  backdrop-filter:none!important;
-  -webkit-backdrop-filter:none!important;
-}
-html[data-power="low"] .orbs,html[data-power="low"] .hero-logo::before{display:none}
-html[data-power="low"] .rv{opacity:1;transform:none}
-html[data-power="low"] h1.display{background:none;color:var(--ink)}
-html[data-power="low"] .btn-solid::after{display:none}
-html[data-power="low"] .overlay{background:rgba(10,5,4,.7)}
 @media(prefers-reduced-motion:reduce){html{transition:none}}
 </style>
 <style id="redesign">
@@ -364,8 +335,7 @@ html{scroll-padding-top:84px}
 #shapes{transform-origin:50% 50%}
 body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;display:none;background:radial-gradient(60% 50% at 12% 0%,rgba(122,12,30,.2),transparent 70%),radial-gradient(50% 45% at 92% 45%,rgba(212,154,106,.2),transparent 70%),radial-gradient(55% 50% at 40% 105%,rgba(74,8,18,.2),transparent 70%)}
 html[data-theme="dark"] body::before{opacity:.85}
-html.no-gl body::before,html[data-power="low"] body::before{display:block}
-html[data-power="low"] #aurora,html[data-power="low"] #shapes{display:none}
+html.no-gl body::before{display:block}
 @media(prefers-reduced-motion:reduce){#aurora,#shapes{display:none}body::before{display:block}}
 /* glass: nav, mockup, feature cards, modal, faq, cta only */
 .gl{background:var(--glass);border:1px solid var(--glass-b);box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.4);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);border-radius:var(--r)}
@@ -411,7 +381,6 @@ header.hero{padding:72px 0 80px}
 .sub{color:var(--ink-soft);max-width:52ch;line-height:1.6;margin:0 0 44px}
 .rx-on .rx{opacity:0;transform:translateY(24px);transition:opacity .8s var(--ease),transform .8s var(--ease);transition-delay:var(--d,0s)}
 .rx-on .rx.in{opacity:1;transform:none}
-html.rx-on[data-power="low"] .rx{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){.rx-on .rx{opacity:1;transform:none}}
 /* steps */
 .steps{position:relative;list-style:none;margin:0;padding:0 0 0 68px;display:flex;flex-direction:column;gap:34px}
@@ -579,7 +548,6 @@ nav .btn{height:40px}
 .overlay.open .modal>h2{animation-delay:.05s}.overlay.open .auth-hint{animation-delay:.1s}.overlay.open #authForm{animation-delay:.16s}.overlay.open .auth-switch{animation-delay:.24s}
 /* calm modes keep end states visible */
 @media (prefers-reduced-motion:reduce){.spark .l{stroke-dashoffset:0}.spark .a,.spark circle{opacity:1}.step h3,.step p{opacity:1}}
-html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spark .a,html[data-power="low"] .spark circle{opacity:1}html[data-power="low"] .step h3,html[data-power="low"] .step p{opacity:1}
 @media (max-width:760px){.sec{padding:72px 0}.step{padding:16px 16px}.step .n{top:16px}.modal{padding:32px 24px 24px}}
 </style>
 <style id="motion">
@@ -630,7 +598,6 @@ html[data-power="low"] .spark .l{stroke-dashoffset:0}html[data-power="low"] .spa
 .chg-ico::before{left:4px;top:1px;width:10px;height:2px;box-shadow:0 5px 0 currentColor,0 10px 0 currentColor}
 .chg-ico::after{left:0;top:1px;width:2px;height:2px;box-shadow:0 5px 0 currentColor,0 10px 0 currentColor}
 @media (max-width:760px){.nav-right{gap:8px}}
-html[data-power="low"] .chg-btn{transition:none!important;transform:none!important}
 </style>
 <style id="beta-tag">
 .tag.beta { background: var(--wine); color: white; padding: 2px 8px; border-radius: 99px; font-size: 0.7rem; font-weight: 700; margin-left: 8px; vertical-align: middle; }
@@ -695,10 +662,6 @@ html.boot .geo u{transition:none}
 html.geo-js .geo b{transform:translate3d(calc(var(--dx)*var(--sp)*1vw),calc(var(--dy)*var(--sp)*1px),0) rotateY(calc(var(--r)*var(--sp)*1deg));animation:none}
 html.geo-js .geo i{animation:spin3d var(--t,22s) linear infinite var(--dir,normal)}
 nav{position:sticky}header.hero,.sec,footer,.mq{position:relative}
-/* Low-end: same seven solids as high-end, but static (still 3D, no motion, no transitions) */
-html[data-power="low"] .geo b,html[data-power="low"] .geo i{animation:none!important;will-change:auto}
-html[data-power="low"] .geo b{transform:none!important}
-html[data-power="low"] .geo u{transition:none!important}
 @media(prefers-reduced-motion:reduce){.geo b,.geo i{animation:none!important;transform:none}.geo i{transform:rotateX(-24deg) rotateY(32deg)}}
 @media(max-width:760px){.g7,.g6{display:none}.g1{--s:52px}.g2{--s:80px}.g3{--s:84px}.g4{--s:70px}}
 
@@ -708,52 +671,36 @@ html[data-power="low"] .geo u{transition:none!important}
 @keyframes stepIn{from{opacity:0;transform:translateX(-28px)}}
 @keyframes badgePop{0%{transform:scale(.5) rotate(-120deg)}60%{transform:scale(1.18) rotate(12deg)}100%{transform:none}}
 .step.on .n{animation:badgePop .7s cubic-bezier(.3,1.5,.5,1) both}
-html:not([data-power="low"]) .rx-on .step.rx{transform:translateX(-56px)}
-html:not([data-power="low"]) .rx-on .step.rx:nth-child(even){transform:translateX(56px)}
-html:not([data-power="low"]) .rx-on .step.rx.in{transform:none}
-html:not([data-power="low"]) .rx-on .fcard.rx:nth-child(odd),html:not([data-power="low"]) .rx-on .frame.rx{transform:translateX(-48px)}
-html:not([data-power="low"]) .rx-on .fcard.rx:nth-child(even){transform:translateX(48px)}
-html:not([data-power="low"]) .rx-on .fcard.rx.in,html:not([data-power="low"]) .rx-on .frame.rx.in{transform:none}
+.rx-on .step.rx{transform:translateX(-56px)}
+.rx-on .step.rx:nth-child(even){transform:translateX(56px)}
+.rx-on .step.rx.in{transform:none}
+.rx-on .fcard.rx:nth-child(odd),.rx-on .frame.rx{transform:translateX(-48px)}
+.rx-on .fcard.rx:nth-child(even){transform:translateX(48px)}
+.rx-on .fcard.rx.in,.rx-on .frame.rx.in{transform:none}
 @supports (animation-timeline:view()){
-  html:not([data-power="low"]) .rx-on .step{animation:slideFromL linear both;animation-timeline:view();animation-range:entry 0% cover 32%}
-  html:not([data-power="low"]) .rx-on .step:nth-child(even){animation-name:slideFromR}
-  html:not([data-power="low"]) .rx-on .step.rx{opacity:1;transform:none;transition:none}
+  .rx-on .step{animation:slideFromL linear both;animation-timeline:view();animation-range:entry 0% cover 32%}
+  .rx-on .step:nth-child(even){animation-name:slideFromR}
+  .rx-on .step.rx{opacity:1;transform:none;transition:none}
 }
 @media(prefers-reduced-motion:reduce){.rx-on .step{animation:none!important}}
 
 /* ===== Icons ===== */
-/* Theme icon: crescent moon <-> sun with eight rays (CSS only, one element) */
+/* Theme icon: sun (rays + circle) swaps for a crescent moon, each as its own SVG,
+   cross-faded and rotated so the switch itself reads as a small animated event. */
 .theme-toggle{position:relative}
-.theme-toggle .ico{position:relative;display:block;width:18px;height:18px;border-radius:50%;background:transparent;box-shadow:inset -6px -3px 0 0 currentColor;
-  transition:transform .6s cubic-bezier(.5,1.5,.4,1),box-shadow .5s cubic-bezier(.4,0,.2,1),background-color .5s}
-.theme-toggle .ico::before{content:"";position:absolute;inset:-5px;border:0;border-radius:50%;opacity:0;transform:scale(.4) rotate(0);
-  background:repeating-conic-gradient(from -4deg,currentColor 0 8deg,transparent 8deg 45deg);
-  -webkit-mask:radial-gradient(circle,transparent 58%,#000 60%);mask:radial-gradient(circle,transparent 58%,#000 60%);
-  transition:opacity .45s ease,transform .7s cubic-bezier(.5,1.4,.4,1)}
-.theme-toggle .ico::after{display:none}
-html[data-theme="dark"] .theme-toggle .ico{background:currentColor;box-shadow:none;transform:scale(.58)}
-html[data-theme="dark"] .theme-toggle .ico::before{opacity:1;transform:scale(1.5) rotate(90deg)}
-.theme-toggle:hover .ico::before{transform:scale(1.5) rotate(135deg)}
-html[data-theme="light"] .theme-toggle:hover .ico{transform:rotate(-20deg)}
-/* Battery: fill is a real element so it can glide smoothly between full and low */
-.bat{position:relative;box-sizing:content-box;width:18px;height:9px;margin-right:3px;border:2px solid currentColor;border-radius:3px}
-.bat::before{content:none!important;display:none}
-.bat::after{content:"";position:absolute;right:-5px;top:50%;width:2px;height:4px;margin-top:-2px;background:currentColor;border-radius:0 2px 2px 0}
-.bat i{position:absolute;left:1px;top:1px;bottom:1px;right:1px;border-radius:1px;overflow:hidden;background:currentColor;
-  transform-origin:left center;transform:scaleX(1);transition:transform .7s cubic-bezier(.65,0,.25,1),background-color .5s ease}
-.bat i::after{content:"";position:absolute;inset:0;width:60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:translateX(-120%);animation:batSheen 2.8s ease-in-out infinite}
-@keyframes batSheen{0%,35%{transform:translateX(-120%)}80%,100%{transform:translateX(220%)}}
-.power-toggle{transition:color .5s ease,border-color .5s ease,transform .3s ease}
-html[data-power="low"] .bat i{transform:scaleX(.32)}
-html[data-power="low"] .bat i::after{display:none}
-/* the low-power rule kills transitions globally; keep the battery glide (and its button colour) smooth */
-html[data-power="low"] .bat i{transition-duration:.7s!important}
-html[data-power="low"] .power-toggle{transition-duration:.5s!important}
-/* Low-end theme icon: plain solid glyphs, no motion */
-html[data-power="low"] .theme-toggle .ico::before{background:none;border:2px dotted currentColor;-webkit-mask:none;mask:none;transform:none}
-html[data-theme="dark"][data-power="low"] .theme-toggle .ico::before{opacity:1;transform:scale(1.5)}
-html[data-power="low"] .theme-toggle .ico{transform:none}
-html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58)}
+.theme-toggle .ico{position:relative;display:block;width:18px;height:18px}
+.theme-toggle .ico svg{position:absolute;inset:0;width:18px;height:18px;color:currentColor;
+  transition:opacity .5s cubic-bezier(.4,0,.2,1),transform .5s cubic-bezier(.5,1.4,.4,1)}
+.theme-toggle .icon-sun{opacity:1;transform:rotate(0deg) scale(1)}
+.theme-toggle .icon-moon{opacity:0;transform:rotate(-90deg) scale(.4)}
+html[data-theme="dark"] .theme-toggle .icon-sun{opacity:0;transform:rotate(90deg) scale(.4)}
+html[data-theme="dark"] .theme-toggle .icon-moon{opacity:1;transform:rotate(0deg) scale(1)}
+.theme-toggle:hover .ico{transform:rotate(14deg)}
+.theme-toggle .ico{transition:transform .35s cubic-bezier(.5,1.4,.4,1)}
+/* a brief ring-pulse plays on every toggle, triggered by the .theme-pulse class the JS adds */
+.theme-toggle.theme-pulse::before{content:"";position:absolute;inset:-4px;border-radius:50%;border:1.5px solid currentColor;
+  opacity:.6;transform:scale(.6);animation:themePulse .55s cubic-bezier(.3,.9,.4,1) both}
+@keyframes themePulse{to{opacity:0;transform:scale(1.35)}}
 </style>
 </head>
 <body>
@@ -782,11 +729,11 @@ html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58
          aria-label="See the changes">
         <span class="chg-ico" aria-hidden="true"></span>
       </a>
-      <button class="theme-toggle power-toggle" id="powerToggle" type="button" aria-label="Low power mode" aria-pressed="false" title="Low power mode">
-        <span class="bat" aria-hidden="true"><i></i></span>
-      </button>
       <button class="theme-toggle" id="themeToggle" aria-label="Switch between light and dark mode">
-        <span class="ico" aria-hidden="true"></span>
+        <span class="ico" aria-hidden="true">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 14.7A8.5 8.5 0 0 1 9.3 3.5a8.5 8.5 0 1 0 11.2 11.2Z"/></svg>
+        </span>
       </button>
       <button class="cmd-btn" id="cmdBtn" type="button" aria-label="Open command palette"><kbd id="cmdKbd">Ctrl K</kbd></button>
       <div id="authButtons" style="display:flex;gap:10px;">
@@ -882,14 +829,10 @@ html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58
       <p><strong>Vanilla JavaScript.</strong> Plain HTML, CSS and JavaScript in one file. No framework and no build step.</p>
       <p><strong>Supabase.</strong> Goals, study logs and posts live in Supabase tables, and sign-in runs through Supabase functions.</p>
       <p><strong>WebGL.</strong> The aurora behind the page is a small fragment shader. If WebGL is unavailable, a CSS gradient takes over.</p>
-      <p><strong>localStorage.</strong> Your theme, device mode and session are remembered in the browser.</p>
+      <p><strong>localStorage.</strong> Your theme and session are remembered in the browser.</p>
     </div>
     <div class="rx">
-      <div class="seg" role="group" aria-label="Device mode">
-        <button id="modeHigh" type="button" aria-pressed="true">Higher End</button>
-        <button id="modeLow" type="button" aria-pressed="false">Lower End</button>
-      </div>
-      <p class="note">Theme and device mode are saved in your browser.</p>
+      <p class="note">Your theme preference is saved in your browser.</p>
     </div>
   </div>
 </div></section>
@@ -899,10 +842,9 @@ html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58
   <div class="faq" style="margin-top:36px">
     <details class="gl rx"><summary>Do I need an email address?<span class="mk" aria-hidden="true"></span></summary><p>No. You pick a username and a password of at least six characters.</p></details>
     <details class="gl rx"><summary>How does the study timer work?<span class="mk" aria-hidden="true"></span></summary><p>Press Start when you sit down and Stop &amp; log when you finish. The session is added to today's total.</p></details>
-    <details class="gl rx"><summary>Will it run on an older phone?<span class="mk" aria-hidden="true"></span></summary><p>Yes. Switch the device mode to Lower End and the blur, motion and WebGL background are turned off.</p></details>
-    <details class="gl rx"><summary>Where is my data stored?<span class="mk" aria-hidden="true"></span></summary><p>Goals, study sessions and posts are stored in Supabase. Your theme and device mode stay in your browser.</p></details>
+    <details class="gl rx"><summary>Where is my data stored?<span class="mk" aria-hidden="true"></span></summary><p>Goals, study sessions and posts are stored in Supabase. Your theme stays in your browser.</p></details>
     <details class="gl rx"><summary>Can teachers and students share one space?<span class="mk" aria-hidden="true"></span></summary><p>Yes. The community feed is shared, and each post carries a Student or Teacher badge.</p></details>
-    <details class="gl rx"><summary>What is the command palette?<span class="mk" aria-hidden="true"></span></summary><p>Press Ctrl+K (⌘K on Mac) to jump to a section, switch theme or device mode, or open the log-in window.</p></details>
+    <details class="gl rx"><summary>What is the command palette?<span class="mk" aria-hidden="true"></span></summary><p>Press Ctrl+K (⌘K on Mac) to jump to a section, switch theme, or open the log-in window.</p></details>
   </div>
 </div></section>
 
@@ -1052,6 +994,8 @@ html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58
       if(getStoredTheme()){ return; } // user has an explicit preference; leave it alone
       var next = e.matches ? 'dark' : 'light';
       root.classList.add('theme-anim', 'logo-swap');
+      toggle.classList.add('theme-pulse');
+      setTimeout(function(){ toggle.classList.remove('theme-pulse'); }, 600);
       heroWrap.classList.add('swap');
       root.setAttribute('data-theme', next);
       clearTimeout(logoTimer);
@@ -1075,6 +1019,8 @@ html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58
 
     // Colours start easing right away; the logo fades out, swaps, and fades back in underneath.
     root.classList.add('theme-anim', 'logo-swap');
+    toggle.classList.add('theme-pulse');
+    setTimeout(function(){ toggle.classList.remove('theme-pulse'); }, 600);
     heroWrap.classList.add('swap');
     root.setAttribute('data-theme', next);
     storeTheme(next);
@@ -1090,27 +1036,6 @@ html[data-theme="dark"][data-power="low"] .theme-toggle .ico{transform:scale(.58
 
     clearTimeout(animTimer);
     animTimer = setTimeout(function(){ root.classList.remove('theme-anim'); }, 700);
-  });
-
-  /* ---------- Low power mode ---------- */
-  var powerBtn = document.getElementById('powerToggle');
-  function getStoredPower(){
-    try{ return localStorage.getItem('prod99_power'); }catch(e){ return null; }
-  }
-  function storePower(v){
-    try{ localStorage.setItem('prod99_power', v); }catch(e){}
-  }
-  function applyPower(on){
-    if(on){ root.setAttribute('data-power', 'low'); }
-    else { root.removeAttribute('data-power'); }
-    powerBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    powerBtn.title = on ? 'Low power mode is on' : 'Low power mode';
-  }
-  applyPower(getStoredPower() === 'low');
-  powerBtn.addEventListener('click', function(){
-    var on = root.getAttribute('data-power') !== 'low';
-    applyPower(on);
-    storePower(on ? 'low' : 'off');
   });
 
   // Allow transitions only after the first paint, so loading in dark mode doesn't animate.
@@ -2020,12 +1945,6 @@ d.addEventListener("visibilitychange", function(){
   else { startMkClock(); }
 });
 
-/* ---- Device mode: drives the existing #powerToggle via .click() ---- */
-var hi=$("modeHigh"),lo=$("modeLow");
-function syncMode(){var l=low();hi.setAttribute("aria-pressed",!l);lo.setAttribute("aria-pressed",l)}
-hi.addEventListener("click",function(){if(low())$("powerToggle").click()});
-lo.addEventListener("click",function(){if(!low())$("powerToggle").click()});
-subs.push(syncMode);syncMode();
 var ctaBtn = $("ctaSignup"); if(ctaBtn){ ctaBtn.addEventListener("click", function(e){ e.preventDefault(); location.href='/login/'; }); }
 
 /* ---- Command palette ---- */
@@ -2041,8 +1960,7 @@ items.push({t:"Open workspace",g:"App",f:function(){
 if(!out){items.push({t:"Log in",g:"Account",f:function(){location.href='/login/'}});items.push({t:"Create an account",g:"Account",f:function(){location.href='/login/'}})}
 else items.push({t:"Log out",g:"Account",f:function(){$("logoutBtn").click()}});
 if(out&&window.P99&&P99.exportAll){items.push({t:"Export my data",g:"Account",b:true,f:function(){P99.exportAll()}});items.push({t:"Import data",g:"Account",b:true,f:function(){var i=d.createElement("input");i.type="file";i.accept="application/json,.json";i.addEventListener("change",function(){if(i.files[0])P99.importJson(i.files[0])});i.click()}})}
-items.push({t:"Toggle theme",g:"Settings",f:function(){$("themeToggle").click()}});
-items.push({t:"Toggle device mode",g:"Settings",f:function(){$("powerToggle").click()}})}
+items.push({t:"Toggle theme",g:"Settings",f:function(){$("themeToggle").click()}})}
 function mark(){$$("li",cl).forEach(function(li,i){li.setAttribute("aria-selected",i===sel)});var el=$("ck"+sel);if(el&&el.scrollIntoView)el.scrollIntoView({block:"nearest"});if(shown.length){ci.setAttribute("aria-activedescendant","ck"+sel);}else{ci.removeAttribute("aria-activedescendant");}}
 function render(){var q=ci.value.toLowerCase().trim();shown=items.filter(function(x){return!q||(x.t+" "+x.g).toLowerCase().indexOf(q)>-1});sel=Math.min(sel,Math.max(0,shown.length-1));cl.innerHTML="";
 shown.forEach(function(x,i){var li=d.createElement("li");li.id="ck"+i;li.setAttribute("role","option");li.setAttribute("aria-selected",i===sel);li.innerHTML="<span></span><small></small>";li.firstChild.textContent=x.t;li.lastChild.textContent=x.g;if(x.b){var tg=d.createElement("span");tg.className="tag beta";tg.textContent="Beta (might break)";li.firstChild.appendChild(tg)}
