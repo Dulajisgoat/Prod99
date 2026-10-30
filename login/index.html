@@ -55,7 +55,7 @@
   }
   .btn-ghost:hover{ border-color:var(--wine); color:var(--wine); }
   .btn-ghost img{ width:18px; height:18px; display:block; }
-  .toggles{ display:flex; gap:10px; }
+  .toggles{ position:absolute; top:16px; right:16px; display:flex; gap:10px; z-index:2; }
 
   /* ---------- theme/power toggle buttons ---------- */
   .theme-toggle{
@@ -88,6 +88,10 @@
   html[data-power="low"] .power-toggle{color:var(--wine);border-color:var(--wine)}
   html[data-power="low"] .bat i{transform:scaleX(.32);transition-duration:.7s!important}
   html[data-power="low"] .bat i::after{display:none}
+  .power-toggle .icon-monitor{opacity:1;transform:scale(1)}
+  .power-toggle .icon-phone{opacity:0;transform:scale(.55)}
+  html[data-power="low"] .power-toggle .icon-monitor{opacity:0;transform:scale(.55)}
+  html[data-power="low"] .power-toggle .icon-phone{opacity:1;transform:scale(1)}
 
   /* ---------- card ---------- */
   .card{
@@ -96,13 +100,20 @@
     box-shadow:0 32px 64px -24px rgba(50,20,30,.4), 0 16px 32px -16px rgba(0,0,0,.25);
     transition:background-color .3s ease, border-color .3s ease;
   }
-  .wordmark{ display:block; margin-bottom:28px; }
-  .wordmark img{ display:block; height:32px; width:auto; object-fit:contain; }
+  .wordmark{
+    position:relative; display:flex; align-items:center; justify-content:center;
+    width:fit-content; margin:0 auto 20px; padding:4px 0;
+  }
+  .wordmark img{ position:relative; z-index:1; display:inline-block; height:92px; width:auto; object-fit:contain; }
   .wordmark .logo-dark{ display:none; }
   html[data-theme="dark"] .wordmark .logo-light{ display:none; }
   html[data-theme="dark"] .wordmark .logo-dark{ display:block; }
+  .wordmark-divider{ width:120px; height:1px; margin:0 auto 20px; background:var(--border); }
+  .brand-name{ margin:0 0 6px; font-size:1.4rem; font-weight:800; letter-spacing:-.02em; color:var(--ink); text-align:center; }
+  .tagline{ margin:0 0 32px; font-size:.78rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); text-align:center; }
   .card h1{ font-size:1.75rem; font-weight:600; letter-spacing:-.04em; line-height:1.1; margin:0 0 8px; }
   .auth-hint{ margin:0 0 28px; color:var(--ink-soft); font-size:.92rem; }
+  #authTitle, #authHint{ display:none; }
 
   #authForm{ display:flex; flex-direction:column; gap:18px; }
   #authForm label{ display:block; font-weight:600; font-size:.84rem; color:var(--ink); margin-bottom:8px; }
@@ -238,9 +249,18 @@ html[data-power="low"] .geo u{transition:none!important}
 
 <div class="topbar">
   <a class="btn-ghost" href="/"><img id="navLogo" src="/logo-light.png" alt="" aria-hidden="true">← Back to Prod99</a>
+</div>
+
+<div id="heroLogoWrap" hidden><img id="heroLogo" src="/logo-light.png" alt="" aria-hidden="true"></div>
+<img id="footerLogo" src="/logo-light.png" alt="" aria-hidden="true" hidden>
+
+<main class="card">
   <div class="toggles">
     <button class="theme-toggle power-toggle" id="powerToggle" type="button" aria-label="Low power mode" aria-pressed="false" title="Low power mode">
-      <span class="bat" aria-hidden="true"><i></i></span>
+      <span class="ico" aria-hidden="true">
+        <svg class="icon-monitor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <svg class="icon-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      </span>
     </button>
     <button class="theme-toggle" id="themeToggle" aria-label="Switch between light and dark mode">
       <span class="ico" aria-hidden="true">
@@ -249,16 +269,13 @@ html[data-power="low"] .geo u{transition:none!important}
       </span>
     </button>
   </div>
-</div>
-
-<div id="heroLogoWrap" hidden><img id="heroLogo" src="/logo-light.png" alt="" aria-hidden="true"></div>
-<img id="footerLogo" src="/logo-light.png" alt="" aria-hidden="true" hidden>
-
-<main class="card">
   <span class="wordmark">
     <img src="/logo-light.png" alt="Prod99" class="logo-light">
     <img src="/logo-dark.png" alt="Prod99" class="logo-dark">
   </span>
+  <div class="wordmark-divider"></div>
+  <p class="brand-name">Prod99</p>
+  <p class="tagline">Teach everywhere, learn from everywhere</p>
   <h1 id="authTitle">Create an account</h1>
   <p class="auth-hint" id="authHint">Pick a username and a password. No email needed.</p>
 
@@ -397,6 +414,8 @@ html[data-power="low"] .geo u{transition:none!important}
     var on = root.getAttribute('data-power') !== 'low';
     applyPower(on);
     storePower(on ? 'low' : 'off');
+    powerBtn.classList.add('theme-pulse');
+    setTimeout(function(){ powerBtn.classList.remove('theme-pulse'); }, 700);
   });
 
   requestAnimationFrame(function(){ requestAnimationFrame(function(){ root.classList.remove('boot'); }); });
